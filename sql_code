@@ -1,0 +1,94 @@
+
+-- Create Database
+CREATE DATABASE blogs;
+USE blogs;
+
+-- Create roles table
+CREATE TABLE roles (
+  role_id CHAR(36) NOT NULL DEFAULT uuid(),
+  role_name VARCHAR(50) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (role_id),
+  UNIQUE KEY role_name (role_name)
+);
+
+-- Create users table
+CREATE TABLE users (
+  user_id CHAR(36) NOT NULL DEFAULT uuid(),
+  username VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  role_id CHAR(36) NOT NULL, -- Foreign key to roles
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  PRIMARY KEY (user_id),
+  UNIQUE KEY username (username),
+  UNIQUE KEY email (email),
+  KEY role_id (role_id),
+  CONSTRAINT users_ibfk_1 FOREIGN KEY (role_id) REFERENCES roles (role_id)
+);
+
+-- Create categories table
+CREATE TABLE categories (
+  category_id CHAR(36) NOT NULL DEFAULT uuid(),
+  name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  user_id CHAR(36) NOT NULL, -- Foreign key to users
+  PRIMARY KEY (category_id),
+  UNIQUE KEY name (name),
+  CONSTRAINT categories_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+);
+
+-- Create posts table
+CREATE TABLE posts (
+  post_id CHAR(36) NOT NULL DEFAULT uuid(),
+  user_id CHAR(36) NOT NULL, -- Foreign key to users
+  title VARCHAR(255) NOT NULL,
+  thumbnail_url VARCHAR(255) DEFAULT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  category_id CHAR(36) DEFAULT NULL, -- Foreign key to categories
+  PRIMARY KEY (post_id),
+  KEY posts_user_id (user_id),
+  CONSTRAINT posts_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (user_id),
+  CONSTRAINT posts_ibfk_2 FOREIGN KEY (category_id) REFERENCES categories (category_id) ON DELETE SET NULL
+);
+
+-- Create comments table
+CREATE TABLE comments (
+  comment_id CHAR(36) NOT NULL DEFAULT uuid(),
+  user_id CHAR(36) NOT NULL, -- Foreign key to users
+  post_id CHAR(36) NOT NULL, -- Foreign key to posts
+  content TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  PRIMARY KEY (comment_id),
+  KEY user_id (user_id),
+  KEY post_id (post_id),
+  CONSTRAINT comments_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+  CONSTRAINT comments_ibfk_2 FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE
+);
+
+-- Create postlikes table
+CREATE TABLE postlikes (
+  user_id CHAR(36) NOT NULL, -- Foreign key to users
+  post_id CHAR(36) NOT NULL, -- Foreign key to posts
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (user_id, post_id),
+  KEY post_id (post_id),
+  CONSTRAINT postlikes_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+  CONSTRAINT postlikes_ibfk_2 FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE
+);
+
+-- Create savedposts table
+CREATE TABLE savedposts (
+  user_id CHAR(36) NOT NULL, -- Foreign key to users
+  post_id CHAR(36) NOT NULL, -- Foreign key to posts
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (user_id, post_id),
+  KEY post_id (post_id),
+  CONSTRAINT savedposts_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+  CONSTRAINT savedposts_ibfk_2 FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE
+);
