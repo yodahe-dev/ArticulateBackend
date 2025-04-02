@@ -18,12 +18,12 @@ module.exports = (sequelize, DataTypes) => {
     });
   
     Category.associate = (models) => {
-      Category.belongsTo(models.User, {
-        foreignKey: 'user_id',
-      });
+      Category.belongsTo(models.User, { foreignKey: 'user_id' });
       Category.hasMany(models.Post, {
         foreignKey: 'category_id',
+        as: 'posts' // Define an alias
       });
+      // Add alias
     };
   
     return Category;

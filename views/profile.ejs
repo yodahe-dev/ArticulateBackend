@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2 {
+      color: #444;
+    }
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .post {
+      display: flex;
+      align-items: flex-start;
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .post:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    .post img {
+      width: 120px;
+      height: auto;
+      border-radius: 8px;
+      margin-right: 15px;
+    }
+    .post-content {
+      flex: 1;
+    }
+    .post h3 {
+      margin: 0 0 10px;
+      color: #333;
+      font-size: 1.2rem;
+    }
+    .post p {
+      margin: 0 0 10px;
+      line-height: 1.6;
+      color: #555;
+    }
+    .post small {
+      display: block;
+      margin-top: 10px;
+      color: #888;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome, <%= username %>!</h1>
+    <p>This is your profile. Below are your posts in LIFO order.</p>
+    <a href="/logout">Logout</a>
+    
+    <h2>Your Posts</h2>
+    <% if (posts.length > 0) { %>
+      <% posts.forEach(post => { %>
+        <div class="post">
+            <h3><%= post.title %></h3>
+            <p><%= post.content %></p>
+            <small>Posted on <%= post.created_at.toDateString() %> | 
+                Category: <%= post.category ? post.category.name : 'No Category' %></small>
+    
+            <% if (post.thumbnail_url) { %>
+                <img src="<%= post.thumbnail_url %>" alt="Thumbnail" style="width: 100px; height: auto;">
+            <% } %>
+        </div>
+    <% }) %>
+    
+    <% } else { %>
+      <p>No posts yet.</p>
+    <% } %>
+  </div>
+</body>
+</html>
