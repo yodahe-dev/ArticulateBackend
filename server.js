@@ -11,10 +11,12 @@ const profileRoute = require('./routes/profileRoute');
 const createRoute = require('./routes/createRoute');
 const likeRoute = require('./routes/likeRoute');
 const savedPostRoute = require('./routes/savedPostRoute');
+const categoryRoute = require('./routes/categoryRoute')
+const methodOverride = require('method-override');
+
 
 const { isAuthenticated, isNotAuthenticated } = require('./middleware/authMiddleware');
 const authRoute = require('./middleware/authRoute');
-const { checkAdmin, checkSubAdmin, getUserRole } = require('./middleware/authroleMiddleware');
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -31,6 +33,7 @@ app.use(
 );
 app.use(authRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(methodOverride('_method'))
 
 app.get('/signup', isNotAuthenticated, (req, res) => {
   res.render('signup');
@@ -51,6 +54,9 @@ app.get('/', isAuthenticated, (req, res) => {
 
 app.use('/like', likeRoute);
 app.use('/save', savedPostRoute);
+
+
+app.use('/category', isAuthenticated, categoryRoute);
 
 app.use((req, res) => {
   res.status(404).send('Page not found');
