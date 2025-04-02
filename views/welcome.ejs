@@ -69,20 +69,52 @@
           <% } %>
           <h3><%= post.title %></h3>
           <p><%= post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content %></p>
-          <small>Posted on <%= post.created_at.toDateString() %> | 
+          <small>Posted on <%= new Date(post.created_at).toDateString() %> | 
             Category: <%= post.category ? post.category.name : 'No Category' %></small>
+          <div>
+            <button class="like-btn" data-post-id="<%= post.post_id %>">
+              <%= post.likedByUser ? 'Unlike' : 'Like' %>
+            </button>
+            <span id="like-count-<%= post.post_id %>"><%= post.likeCount %></span> Likes
+          </div>
         </div>
       <% }) %>
     <% } else { %>
       <p>No posts found.</p>
     <% } %>
+    
   </div>
 
   <script>
+    // Logout confirmation
     document.querySelector('a[href="/logout"]').addEventListener('click', function(event) {
       if (!confirm("Are you sure you want to log out?")) {
         event.preventDefault();
       }
+    });
+
+    // Like button functionality
+    document.querySelectorAll('.like-btn').forEach(button => {
+      button.addEventListener('click', async function() {
+        const postId = this.getAttribute('data-post-id');
+        const isLiked = this.innerText === 'Unlike';
+        const url = `/like/${postId}/${isLiked ? 'unlike' : 'like'}`;
+
+        try {
+          const res = await fetch(url, { method: isLiked ? 'DELETE' : 'POST' });
+          const data = await res.json();
+
+          if (res.ok) {
+            this.innerText = isLiked ? 'Like' : 'Unlike';
+            document.getElementById(`like-count-${postId}`).innerText = data.likes;
+          } else {
+            alert(data.message || 'Error');
+          }
+        } catch (error) {
+          console.error(error);
+          alert('Something went wrong');
+        }
+      });
     });
   </script>
 </body>

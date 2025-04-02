@@ -4,25 +4,23 @@ const session = require('express-session');
 const path = require('path');
 const db = require('./models');
 
-// Import Routes
 const signupRoute = require('./routes/signupRoute');
 const loginRoute = require('./routes/loginRoute');
 const homeRoute = require('./routes/homeRoute');
 const profileRoute = require('./routes/profileRoute');
-const createRoute = require('./routes/createRoute'); // Import createRoute
+const createRoute = require('./routes/createRoute');
+const likeRoute = require('./routes/likeRoute');
 
-// Import Middleware
 const { isAuthenticated, isNotAuthenticated } = require('./middleware/authMiddleware');
+const authRoute = require('./middleware/authRoute');
+const { checkAdmin, checkSubAdmin, getUserRole } = require('./middleware/authroleMiddleware');
 
-// Set EJS as the View Engine
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Configure Sessions
 app.use(
   session({
     secret: 'your-secret-key',
@@ -30,11 +28,9 @@ app.use(
     saveUninitialized: true,
   })
 );
-
-// Serve Static Files (For Uploaded Images)
+app.use(authRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes
 app.get('/signup', isNotAuthenticated, (req, res) => {
   res.render('signup');
 });
@@ -45,16 +41,39 @@ app.get('/login', isNotAuthenticated, (req, res) => {
 });
 app.post('/login', isNotAuthenticated, loginRoute);
 
-app.use('/home', isAuthenticated, homeRoute);
-app.use('/profile', isAuthenticated, profileRoute);
-app.use('/create', isAuthenticated, createRoute); // Add Create Post Route
 
-// Redirect root to /home
+
+app.use('/', isAuthenticated, homeRoute);
+app.use('/profile', isAuthenticated, profileRoute);
+app.use('/create', isAuthenticated, createRoute);
 app.get('/', isAuthenticated, (req, res) => {
   res.redirect('/home');
 });
+app.use('/like', likeRoute);
 
-// Sync Database and Start Server
+
+
+// Admin-only route
+app.get('/admin-dashboard', checkAdmin, (req, res) => {
+  res.send('Welcome to Admin Dashboard (Admin only can access)');
+});
+
+// Admin and Subadmin only route
+app.get('/subadmin-dashboard', checkSubAdmin, (req, res) => {
+  res.send('Welcome to Subadmin Dashboard (Admin and Subadmin only can access)');
+});
+
+// All authenticated users can access
+app.get('/user-dashboard', getUserRole, (req, res) => {
+  res.send('Welcome to User Dashboard (All authenticated users can access)');
+});
+
+// 404 Route if no other route matches
+app.use((req, res) => {
+  res.status(404).send('Page not found');
+});
+
+// Start the server after DB sync
 db.sequelize.sync().then(() => {
   app.listen(5000, () => {
     console.log('Server is running on http://localhost:5000');

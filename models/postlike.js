@@ -1,5 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
-    const PostLike = sequelize.define('PostLike', {
+  const PostLike = sequelize.define(
+    'PostLike',
+    {
       user_id: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -9,14 +11,20 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       created_at: {
-        type: DataTypes.DATE,  // Ensure this is set to DATE or TIMESTAMP
+        type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
       },
-    }, {
-      tableName: 'postlikes',  // Ensure you specify the table name
-      timestamps: false,  // Since you're manually managing the created_at field
-    });
-  
-    return PostLike;
+    },
+    {
+      tableName: 'postlikes',
+      timestamps: false,
+    }
+  );
+
+  PostLike.associate = (models) => {
+    PostLike.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+    PostLike.belongsTo(models.Post, { foreignKey: 'post_id', as: 'post' });
   };
-  
+
+  return PostLike;
+};

@@ -29,15 +29,7 @@ router.post('/login', async (req, res) => {
     console.error(error);
     res.status(500).send('Error during login');
   }
-});
-
-router.get('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).send('Error during logout');
-    }
-    res.redirect('/login');
-  });
+  
 });
 
 module.exports = router;

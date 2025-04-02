@@ -1,32 +1,45 @@
 const express = require('express');
 const router = express.Router();
 const { Op } = require('sequelize');
-const { User, Post, Category } = require('../models');
+const { User, Post, Category, PostLike } = require('../models');
 
 router.get('/', async (req, res) => {
   if (!req.session.userId) {
-    return res.redirect('/signup'); // Redirect if not authenticated
+    return res.redirect('/signup');
   }
 
   try {
     const user = await User.findByPk(req.session.userId);
+    const categoryFilter = req.query.category;
 
-    // Fetch all posts except the logged-in user's own posts
-    const posts = await Post.findAll({
+    // Fetch posts, filter by category if needed
+    const postQuery = {
       where: {
-        user_id: { [Op.ne]: req.session.userId }, // Exclude user's own posts
+        user_id: { [Op.ne]: req.session.userId },
       },
-      include: [{
-        model: Category,
-        as: 'category',  // Specify the alias if one is used in associations
-        attributes: ['name']
-      }],
-      order: [['created_at', 'DESC']], // Use created_at (not createdAt)
-    });
+      include: [
+        { model: Category, as: 'category', attributes: ['name'] },
+        { model: PostLike, as: 'PostLikes' }, // Use 'PostLikes' instead of 'likes'
+      ],
+      order: [['created_at', 'DESC']],
+    };
 
+    if (categoryFilter) {
+      postQuery.where.category_id = categoryFilter;
+    }
+
+    const posts = await Post.findAll(postQuery);
     const categories = await Category.findAll();
 
-    res.render('welcome', { username: user.username, posts, categories });
+    // Map posts to include like count and check if user liked
+    const postsWithLikes = posts.map(post => ({
+      ...post.toJSON(),
+      likeCount: post.PostLikes.length,
+      likedByUser: post.PostLikes.some(like => like.user_id === req.session.userId),
+    }));
+
+    res.render('welcome', { username: user.username, posts: postsWithLikes, categories });
+    
   } catch (error) {
     console.error(error);
     res.status(500).send('Error loading posts');

@@ -9,10 +9,10 @@ router.get('/', isAuthenticated, async (req, res) => {
             where: { user_id: req.session.userId },
             include: [{
                 model: Category,
-                as: 'category',  // Make sure to use the correct alias
+                as: 'category',
                 attributes: ['name']
             }],
-            order: [['created_at', 'DESC']], // LIFO order (latest first)
+            order: [['created_at', 'DESC']],
         });
 
         res.render('profile', { username: req.session.username, posts });

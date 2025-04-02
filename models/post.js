@@ -31,7 +31,10 @@ module.exports = (sequelize, DataTypes) => {
       as: 'category'  // Alias correctly mapped here
     });
     Post.hasMany(models.Comment, { foreignKey: 'post_id' });
-    Post.hasMany(models.PostLike, { foreignKey: 'post_id' });
+    Post.hasMany(models.PostLike, {
+      foreignKey: 'post_id',
+      as: 'PostLikes', // Alias added here to match your query
+    });
     Post.hasMany(models.SavedPost, { foreignKey: 'post_id' });
   };
   
