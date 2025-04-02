@@ -10,6 +10,7 @@ const homeRoute = require('./routes/homeRoute');
 const profileRoute = require('./routes/profileRoute');
 const createRoute = require('./routes/createRoute');
 const likeRoute = require('./routes/likeRoute');
+const savedPostRoute = require('./routes/savedPostRoute');
 
 const { isAuthenticated, isNotAuthenticated } = require('./middleware/authMiddleware');
 const authRoute = require('./middleware/authRoute');
@@ -49,7 +50,10 @@ app.use('/create', isAuthenticated, createRoute);
 app.get('/', isAuthenticated, (req, res) => {
   res.redirect('/home');
 });
+
+// Fancy feature: Like and Unlike posts and save posts
 app.use('/like', likeRoute);
+app.use('/save', savedPostRoute);
 
 
 

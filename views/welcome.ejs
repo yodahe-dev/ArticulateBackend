@@ -44,6 +44,17 @@
     .logout-btn:hover {
       background: darkred;
     }
+    .save-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .save-btn:hover {
+      background-color: #218838;
+    }
   </style>
 </head>
 <body>
@@ -77,6 +88,12 @@
             </button>
             <span id="like-count-<%= post.post_id %>"><%= post.likeCount %></span> Likes
           </div>
+          <div>
+            <button class="save-btn" data-post-id="<%= post.post_id %>">
+              <%= post.savedByUser ? 'Unsave' : 'Save' %>
+            </button>
+            <span id="save-count-<%= post.post_id %>"><%= post.saveCount %></span> Saves
+          </div>
         </div>
       <% }) %>
     <% } else { %>
@@ -107,6 +124,30 @@
           if (res.ok) {
             this.innerText = isLiked ? 'Like' : 'Unlike';
             document.getElementById(`like-count-${postId}`).innerText = data.likes;
+          } else {
+            alert(data.message || 'Error');
+          }
+        } catch (error) {
+          console.error(error);
+          alert('Something went wrong');
+        }
+      });
+    });
+
+    // Save button functionality
+    document.querySelectorAll('.save-btn').forEach(button => {
+      button.addEventListener('click', async function() {
+        const postId = this.getAttribute('data-post-id');
+        const isSaved = this.innerText === 'Unsave';
+        const url = `/save/${postId}/${isSaved ? 'unsave' : 'save'}`;
+
+        try {
+          const res = await fetch(url, { method: isSaved ? 'DELETE' : 'POST' });
+          const data = await res.json();
+
+          if (res.ok) {
+            this.innerText = isSaved ? 'Save' : 'Unsave';
+            document.getElementById(`save-count-${postId}`).innerText = data.saves;
           } else {
             alert(data.message || 'Error');
           }
