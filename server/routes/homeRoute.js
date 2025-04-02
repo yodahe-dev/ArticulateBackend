@@ -12,7 +12,6 @@ router.get('/', async (req, res) => {
     const user = await User.findByPk(req.session.userId);
     const categoryFilter = req.query.category;
 
-    // Fetch posts, filter by category if needed
     const postQuery = {
       where: {
         user_id: { [Op.ne]: req.session.userId },
@@ -41,7 +40,6 @@ router.get('/', async (req, res) => {
     const posts = await Post.findAll(postQuery);
     const categories = await Category.findAll();
 
-    // Map posts to include like count, saved count, check if user liked, and check if the user has saved the post
     const postsWithLikesAndSaves = posts.map(post => ({
       ...post.toJSON(),
       likeCount: post.PostLikes.length,

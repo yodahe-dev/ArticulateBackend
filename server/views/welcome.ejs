@@ -101,6 +101,9 @@
             <%= post.title %>
           </h3>
           <p>
+            <% if (post.thumbnail_url) { %>
+              <img src="<%= post.thumbnail_url %>" alt="Thumbnail" style="width: 100px; height: auto;">
+          <% } %>
             <%= post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content %>
           </p>
           <small>Posted on <%= new Date(post.created_at).toDateString() %> |
