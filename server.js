@@ -4,6 +4,7 @@ const session = require('express-session');
 const path = require('path');
 const db = require('./models');
 
+// Import routes
 const signupRoute = require('./routes/signupRoute');
 const loginRoute = require('./routes/loginRoute');
 const homeRoute = require('./routes/homeRoute');
@@ -11,12 +12,12 @@ const profileRoute = require('./routes/profileRoute');
 const createRoute = require('./routes/createRoute');
 const likeRoute = require('./routes/likeRoute');
 const savedPostRoute = require('./routes/savedPostRoute');
-const categoryRoute = require('./routes/categoryRoute')
+const categoryRoute = require('./routes/categoryRoute');
+const commentRoute = require('./routes/commentRoute');
 const methodOverride = require('method-override');
 
-
-const { isAuthenticated, isNotAuthenticated } = require('./middleware/authMiddleware');
-const authRoute = require('./middleware/authRoute');
+// Import middleware
+const { isAuthenticated, isNotAuthenticated, isAdminOrSubadmin } = require('./middleware/authMiddleware'); // Import role checking middleware
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -31,10 +32,11 @@ app.use(
     saveUninitialized: true,
   })
 );
-app.use(authRoute);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(methodOverride('_method'))
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(methodOverride('_method'));
+
+// Authentication Routes
 app.get('/signup', isNotAuthenticated, (req, res) => {
   res.render('signup');
 });
@@ -45,6 +47,7 @@ app.get('/login', isNotAuthenticated, (req, res) => {
 });
 app.post('/login', isNotAuthenticated, loginRoute);
 
+// Protected Routes
 app.use('/', isAuthenticated, homeRoute);
 app.use('/profile', isAuthenticated, profileRoute);
 app.use('/create', isAuthenticated, createRoute);
@@ -55,9 +58,13 @@ app.get('/', isAuthenticated, (req, res) => {
 app.use('/like', likeRoute);
 app.use('/save', savedPostRoute);
 
+// Category route protected with role-based access control (only admins and subadmins)
+app.use('/category', isAuthenticated, isAdminOrSubadmin, categoryRoute);
 
-app.use('/category', isAuthenticated, categoryRoute);
 
+app.use('/', commentRoute);
+
+// 404 page if route not found
 app.use((req, res) => {
   res.status(404).send('Page not found');
 });

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,22 +11,20 @@
       margin: 20px;
       padding: 20px;
     }
+
     .container {
       max-width: 1000px;
       margin: auto;
     }
+
     .card {
       border: 1px solid #ccc;
       padding: 15px;
       margin-bottom: 15px;
       border-radius: 8px;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     }
-    .card img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 5px;
-    }
+
     .category-btn {
       display: inline-block;
       margin-right: 10px;
@@ -35,15 +34,19 @@
       border-radius: 5px;
       text-decoration: none;
     }
+
     .category-btn:hover {
       background: #0056b3;
     }
+
     .logout-btn {
       background: red;
     }
+
     .logout-btn:hover {
       background: darkred;
     }
+
     .save-btn {
       background-color: #28a745;
       color: white;
@@ -52,11 +55,28 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     .save-btn:hover {
       background-color: #218838;
     }
+
+    .comment {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    .comment-btn {
+      margin-top: 10px;
+    }
+
+    .comment-actions {
+      margin-top: 10px;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Welcome, <%= username %>!</h1>
@@ -67,7 +87,9 @@
     <div>
       <a href="/" class="category-btn">All</a>
       <% categories.forEach(category => { %>
-        <a href="/?category=<%= category.category_id %>" class="category-btn"><%= category.name %></a>
+        <a href="/?category=<%= category.category_id %>" class="category-btn">
+          <%= category.name %>
+        </a>
       <% }) %>
     </div>
 
@@ -75,88 +97,97 @@
     <% if (posts.length > 0) { %>
       <% posts.forEach(post => { %>
         <div class="card">
-          <% if (post.thumbnail_url) { %>
-            <img src="<%= post.thumbnail_url %>" alt="Thumbnail">
-          <% } %>
-          <h3><%= post.title %></h3>
-          <p><%= post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content %></p>
-          <small>Posted on <%= new Date(post.created_at).toDateString() %> | 
-            Category: <%= post.category ? post.category.name : 'No Category' %></small>
-          <div>
-            <button class="like-btn" data-post-id="<%= post.post_id %>">
-              <%= post.likedByUser ? 'Unlike' : 'Like' %>
-            </button>
-            <span id="like-count-<%= post.post_id %>"><%= post.likeCount %></span> Likes
-          </div>
-          <div>
-            <button class="save-btn" data-post-id="<%= post.post_id %>">
-              <%= post.savedByUser ? 'Unsave' : 'Save' %>
-            </button>
-            <span id="save-count-<%= post.post_id %>"><%= post.saveCount %></span> Saves
+          <h3>
+            <%= post.title %>
+          </h3>
+          <p>
+            <%= post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content %>
+          </p>
+          <small>Posted on <%= new Date(post.created_at).toDateString() %> |
+              Category: <%= post.category ? post.category.name : 'No Category' %></small>
+
+          <!-- Comments Section -->
+          <div class="comments-section">
+            <textarea id="newComment<%= post.post_id %>" placeholder="Write a comment..."></textarea>
+            <button class="category-btn comment-btn" onclick="addComment('<%= post.post_id %>')">Add Comment</button>
+            <h4>Comments</h4>
+            <% if (post.Comments && post.Comments.length > 0) { %>
+              <% post.Comments.forEach(comment => { %>
+                <div class="comment">
+                  <p><strong><%= comment.User.username %>:</strong> <%= comment.content %></p>
+                  <small>Posted on: <%= new Date(comment.created_at).toDateString() %></small>
+                  <div class="comment-actions">
+                    <button class="category-btn" onclick="editComment('<%= comment.comment_id %>')">Edit</button>
+                    <button class="category-btn" onclick="deleteComment('<%= comment.comment_id %>')">Delete</button>
+                  </div>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <p>No comments yet.</p>
+            <% } %>
           </div>
         </div>
       <% }) %>
     <% } else { %>
       <p>No posts found.</p>
     <% } %>
-    
   </div>
 
   <script>
-    // Logout confirmation
-    document.querySelector('a[href="/logout"]').addEventListener('click', function(event) {
-      if (!confirm("Are you sure you want to log out?")) {
-        event.preventDefault();
+    // Add Comment
+    async function addComment(postId) {
+      const content = document.getElementById(`newComment${postId}`).value;
+      if (!content) return alert('Comment content cannot be empty');
+
+      try {
+        const res = await fetch('/comment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ post_id: postId, content })
+        });
+        const data = await res.json();
+        alert(data.message || 'Error');
+        location.reload();
+      } catch (error) {
+        alert('Something went wrong');
       }
-    });
+    }
 
-    // Like button functionality
-    document.querySelectorAll('.like-btn').forEach(button => {
-      button.addEventListener('click', async function() {
-        const postId = this.getAttribute('data-post-id');
-        const isLiked = this.innerText === 'Unlike';
-        const url = `/like/${postId}/${isLiked ? 'unlike' : 'like'}`;
-
+    // Edit Comment
+    async function editComment(commentId) {
+      const content = prompt('Edit your comment:');
+      if (content) {
         try {
-          const res = await fetch(url, { method: isLiked ? 'DELETE' : 'POST' });
+          const res = await fetch(`/comment/${commentId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content })
+          });
           const data = await res.json();
-
-          if (res.ok) {
-            this.innerText = isLiked ? 'Like' : 'Unlike';
-            document.getElementById(`like-count-${postId}`).innerText = data.likes;
-          } else {
-            alert(data.message || 'Error');
-          }
+          alert(data.message || 'Error');
+          location.reload();
         } catch (error) {
-          console.error(error);
           alert('Something went wrong');
         }
-      });
-    });
+      }
+    }
 
-    // Save button functionality
-    document.querySelectorAll('.save-btn').forEach(button => {
-      button.addEventListener('click', async function() {
-        const postId = this.getAttribute('data-post-id');
-        const isSaved = this.innerText === 'Unsave';
-        const url = `/save/${postId}/${isSaved ? 'unsave' : 'save'}`;
-
+    // Delete Comment
+    async function deleteComment(commentId) {
+      if (confirm('Are you sure you want to delete this comment?')) {
         try {
-          const res = await fetch(url, { method: isSaved ? 'DELETE' : 'POST' });
+          const res = await fetch(`/comment/${commentId}`, {
+            method: 'DELETE'
+          });
           const data = await res.json();
-
-          if (res.ok) {
-            this.innerText = isSaved ? 'Save' : 'Unsave';
-            document.getElementById(`save-count-${postId}`).innerText = data.saves;
-          } else {
-            alert(data.message || 'Error');
-          }
+          alert(data.message || 'Error');
+          location.reload();
         } catch (error) {
-          console.error(error);
           alert('Something went wrong');
         }
-      });
-    });
+      }
+    }
   </script>
 </body>
+
 </html>
