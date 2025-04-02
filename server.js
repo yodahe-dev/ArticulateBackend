@@ -42,8 +42,6 @@ app.get('/login', isNotAuthenticated, (req, res) => {
 });
 app.post('/login', isNotAuthenticated, loginRoute);
 
-
-
 app.use('/', isAuthenticated, homeRoute);
 app.use('/profile', isAuthenticated, profileRoute);
 app.use('/create', isAuthenticated, createRoute);
@@ -51,33 +49,13 @@ app.get('/', isAuthenticated, (req, res) => {
   res.redirect('/home');
 });
 
-// Fancy feature: Like and Unlike posts and save posts
 app.use('/like', likeRoute);
 app.use('/save', savedPostRoute);
 
-
-
-// Admin-only route
-app.get('/admin-dashboard', checkAdmin, (req, res) => {
-  res.send('Welcome to Admin Dashboard (Admin only can access)');
-});
-
-// Admin and Subadmin only route
-app.get('/subadmin-dashboard', checkSubAdmin, (req, res) => {
-  res.send('Welcome to Subadmin Dashboard (Admin and Subadmin only can access)');
-});
-
-// All authenticated users can access
-app.get('/user-dashboard', getUserRole, (req, res) => {
-  res.send('Welcome to User Dashboard (All authenticated users can access)');
-});
-
-// 404 Route if no other route matches
 app.use((req, res) => {
   res.status(404).send('Page not found');
 });
 
-// Start the server after DB sync
 db.sequelize.sync().then(() => {
   app.listen(5000, () => {
     console.log('Server is running on http://localhost:5000');
