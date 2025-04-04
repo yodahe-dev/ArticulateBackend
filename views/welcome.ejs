@@ -1,193 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome</title>
+  <title>Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #f87d02;
+      --secondary: #f8b102;
+      --text: #2d3748;
+      --text-light: #4a5568;
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 20px;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(150deg, #f8fafc 0%, #f1f5f9 100%);
+      color: var(--text);
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 70px;
+      
+    }
+
+    .hero {
+      background: linear-gradient(45deg, #f87402, #f88802, #f8b102);
+      color: white;
+      min-height: 400px;
+      padding: 8rem 1.5rem 6rem;
+      margin-bottom: 0.2rem;
+      clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
     }
 
     .container {
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    .card {
-      border: 1px solid #ccc;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
     }
 
     .category-btn {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 5px 10px;
-      background: #007bff;
-      color: white;
-      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      background: rgba(248, 125, 2, 0.1);
+      color: var(--primary);
+      font-weight: 500;
       text-decoration: none;
+      transition: all 0.3s ease;
+      margin: 0.5rem;
     }
 
     .category-btn:hover {
-      background: #0056b3;
+      background: rgba(248, 125, 2, 0.2);
+      transform: translateY(-2px);
     }
 
-    .logout-btn {
-      background: red;
+    .post-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
     }
 
-    .logout-btn:hover {
-      background: darkred;
+    .post-card {
+      max-width: 400px;
+      text-align: center;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
     }
 
-    .save-btn {
-      background-color: #28a745;
+    .post-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .post-content {
+      padding: 1.5rem;
+    }
+
+    .post-content h3 {
+      margin: 0 0 0.5rem;
+      color: #000;
+      font-size: 1.25rem;
+    }
+
+    .post-content p {
+      color: #343434;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 0 0 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #2d3748;
+    }
+
+    .post-category {
+      background: rgba(248, 125, 2, 0.1);
+      color: var(--primary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .profile-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.75rem 7rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      background: var(--primary);
       color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
+      margin-top: 1rem;
     }
 
-    .save-btn:hover {
-      background-color: #218838;
+    .profile-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      background: #f87002;
     }
 
-    .comment {
-      margin-top: 10px;
-      padding: 10px;
-      background-color: #f1f1f1;
-      border-radius: 5px;
-    }
-
-    .comment-btn {
-      margin-top: 10px;
-    }
-
-    .comment-actions {
-      margin-top: 10px;
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .post-wrapper {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <h1>Welcome, <%= username %>!</h1>
-    <p>You are successfully logged in.</p>
-    <a href="/logout" class="category-btn logout-btn">Logout</a>
+  <%- include('components/navbar') %>
+  <section class="hero">
+    <div>
+      <h1>Nael Blog Creating Platform</h1>
+      <p>Discover tutorials and insights on Nael Blog.</p>
+      <a href="/create" class="profile-btn">
+        <span class="material-icons-round">add_circle</span>
+        Start Posting Blogs
+      </a>
+    </div>
+  </section>
 
-    <h2>Categories</h2>
+  <div class="container">
+    <h2>Explore Categories</h2>
     <div>
       <a href="/" class="category-btn">All</a>
       <% categories.forEach(category => { %>
-        <a href="/?category=<%= category.category_id %>" class="category-btn">
-          <%= category.name %>
-        </a>
+        <a href="/?category=<%= category.category_id %>" class="category-btn"><%= category.name %></a>
       <% }) %>
     </div>
 
-    <h2>Posts</h2>
+    <h2>Latest Posts</h2>
     <% if (posts.length > 0) { %>
-      <% posts.forEach(post => { %>
-        <div class="card">
-          <h3>
-            <%= post.title %>
-          </h3>
-          <p>
-            <%= post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content %>
-          </p>
-          <small>Posted on <%= new Date(post.created_at).toDateString() %> |
-              Category: <%= post.category ? post.category.name : 'No Category' %></small>
-
-          <!-- Comments Section -->
-          <div class="comments-section">
-            <textarea id="newComment<%= post.post_id %>" placeholder="Write a comment..."></textarea>
-            <button class="category-btn comment-btn" onclick="addComment('<%= post.post_id %>')">Add Comment</button>
-            <h4>Comments</h4>
-            <% if (post.Comments && post.Comments.length > 0) { %>
-              <% post.Comments.forEach(comment => { %>
-                <div class="comment">
-                  <p><strong><%= comment.User.username %>:</strong> <%= comment.content %></p>
-                  <small>Posted on: <%= new Date(comment.created_at).toDateString() %></small>
-                  <div class="comment-actions">
-                    <button class="category-btn" onclick="editComment('<%= comment.comment_id %>')">Edit</button>
-                    <button class="category-btn" onclick="deleteComment('<%= comment.comment_id %>')">Delete</button>
-                  </div>
-                </div>
-              <% }) %>
-            <% } else { %>
-              <p>No comments yet.</p>
-            <% } %>
+      <div class="post-wrapper">
+        <% posts.forEach(post => { %>
+          <div class="post-card">
+            <img src="<%= post.thumbnail_url %>" alt="Thumbnail" 
+                 onerror="this.onerror=null;this.src='./uploads/no<%= Math.floor(Math.random() * 2) + 1 %>.jpg';">
+            <div class="post-content">
+              <h3><%= post.title %></h3>
+              <p><%= post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content %></p>
+              <div class="post-meta">
+                <span><%= post.created_at.toDateString() %></span>
+                <span class="post-category">
+                  <%= post.category ? post.category.name : 'General' %>
+                </span>
+              </div>
+              <a href="/post/<%= post.id %>" class="profile-btn">
+                Read More
+              </a>
+            </div>
           </div>
-        </div>
-      <% }) %>
+        <% }) %>
+      </div>
     <% } else { %>
-      <p>No posts found.</p>
+      <div class="empty-state">
+        <span class="material-icons-round">article</span>
+        <h2>No Posts Found</h2>
+        <p>Be the first to share your knowledge!</p>
+        <a href="/create" class="profile-btn">
+          <span class="material-icons-round">add_circle</span>
+          Create First Post
+        </a>
+      </div>
     <% } %>
   </div>
-
-  <script>
-    // Add Comment
-    async function addComment(postId) {
-      const content = document.getElementById(`newComment${postId}`).value;
-      if (!content) return alert('Comment content cannot be empty');
-
-      try {
-        const res = await fetch('/comment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ post_id: postId, content })
-        });
-        const data = await res.json();
-        alert(data.message || 'Error');
-        location.reload();
-      } catch (error) {
-        alert('Something went wrong');
-      }
-    }
-
-    // Edit Comment
-    async function editComment(commentId) {
-      const content = prompt('Edit your comment:');
-      if (content) {
-        try {
-          const res = await fetch(`/comment/${commentId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content })
-          });
-          const data = await res.json();
-          alert(data.message || 'Error');
-          location.reload();
-        } catch (error) {
-          alert('Something went wrong');
-        }
-      }
-    }
-
-    // Delete Comment
-    async function deleteComment(commentId) {
-      if (confirm('Are you sure you want to delete this comment?')) {
-        try {
-          const res = await fetch(`/comment/${commentId}`, {
-            method: 'DELETE'
-          });
-          const data = await res.json();
-          alert(data.message || 'Error');
-          location.reload();
-        } catch (error) {
-          alert('Something went wrong');
-        }
-      }
-    }
-  </script>
+  <%- include('components/footer') %>
 </body>
-
 </html>

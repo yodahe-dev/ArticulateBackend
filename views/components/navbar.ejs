@@ -1,0 +1,158 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+<style>
+  :root {
+    --primary: #f87d02;
+    --secondary: #f8b102;
+    --nav-bg: linear-gradient(45deg, #1c2833, #34495e);
+    --nav-hover: rgba(255, 255, 255, 0.1);
+    --text-light: #ecf0f1;
+    --active-color: #f39c12;
+  }
+
+  .navbar {
+    background: var(--nav-bg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand {
+    color: var(--primary);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.3s ease;
+  }
+
+  .nav-brand:hover {
+    transform: translateX(5px);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .nav-link {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .nav-link:hover {
+    color: white;
+    background: var(--nav-hover);
+  }
+
+  .nav-link.active {
+    color: var(--active-color);
+    font-weight: 600;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .nav-links {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--nav-bg);
+      flex-direction: column;
+      padding: 1rem 0;
+      display: none;
+    }
+
+    .nav-links.active {
+      display: flex;
+    }
+
+    .nav-link {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .menu-toggle {
+      display: block;
+    }
+  }
+</style>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="nav-brand">
+      <span class="material-icons-round">article</span>
+      NaelBlog
+    </a>
+
+    <button class="menu-toggle" id="menuToggle">
+      <span class="material-icons-round" id="menuIcon">menu</span>
+    </button>
+
+    <div class="nav-links" id="navLinks">
+      <a href="/" class="nav-link" data-path="/"> <span class="material-icons-round">home</span> Home </a>
+      <a href="/create" class="nav-link" data-path="/create"> <span class="material-icons-round">add_circle</span> Create </a>
+      <a href="/profile" class="nav-link" data-path="/profile"> <span class="material-icons-round">person</span> Profile </a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Mobile Menu Toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  const menuIcon = document.getElementById('menuIcon');
+
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    menuIcon.textContent = navLinks.classList.contains('active') ? 'close' : 'menu';
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+      navLinks.classList.remove('active');
+      menuIcon.textContent = 'menu';
+    }
+  });
+
+  // Set Active Link Based on Current Path
+  document.querySelectorAll('.nav-link').forEach(link => {
+    if (window.location.pathname === link.getAttribute('data-path')) {
+      link.classList.add('active');
+    }
+  });
+</script>
