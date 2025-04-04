@@ -17,7 +17,7 @@ const commentRoute = require('./routes/commentRoute');
 const methodOverride = require('method-override');
 
 // Import middleware
-const { isAuthenticated, isNotAuthenticated, isAdminOrSubadmin } = require('./middleware/authMiddleware'); // Import role checking middleware
+const { isAuthenticated, isNotAuthenticated, isAdminOrSubadmin } = require('./middleware/authMiddleware');
 
 app.set('view engine', 'ejs');
 app.set('views', './views');

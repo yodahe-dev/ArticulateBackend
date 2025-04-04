@@ -4,98 +4,280 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f9;
-      color: #333;
+    :root {
+      --primary: #ff6b6b;
+      --secondary: #ffa502;
+      --text: #2d3748;
+      --text-light: #4a5568;
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
     }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(150deg, #f8fafc 0%, #f1f5f9 100%);
+      color: var(--text);
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 70px;
+      overflow-x: hidden;
+    }
+
     .container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 10px;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .profile-header {
+      background: var(--gradient);
+      color: white;
+      padding: 6rem 2rem 4rem;
+      margin-bottom: 2rem;
+      clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-header::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: -50px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .profile-header h1 {
+      font-size: 2.8rem;
+      margin: 0 0 1rem;
+      letter-spacing: -0.5px;
+    }
+
+    .profile-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .profile-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    h1, h2 {
-      color: #444;
+
+    .profile-btn.primary {
+      background: white;
+      color: var(--primary);
     }
-    a {
-      color: #007BFF;
-      text-decoration: none;
+
+    .profile-btn.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      backdrop-filter: blur(5px);
     }
-    a:hover {
-      text-decoration: underline;
+
+    .profile-btn.danger {
+      background: #dc2626;
+      color: white;
     }
-    .post {
-      display: flex;
-      align-items: flex-start;
-      border: 1px solid #ddd;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      background-color: #fff;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
+
+    .profile-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     }
-    .post:hover {
+
+    .post-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .post-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .post-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
-    .post img {
-      width: 120px;
-      height: auto;
-      border-radius: 8px;
-      margin-right: 15px;
+
+    .post-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-bottom: 3px solid var(--primary);
     }
+
     .post-content {
-      flex: 1;
+      padding: 1.5rem;
     }
-    .post h3 {
-      margin: 0 0 10px;
-      color: #333;
-      font-size: 1.2rem;
+
+    .post-content h3 {
+      margin: 0 0 0.75rem;
+      color: #2d3748;
+      font-size: 1.25rem;
     }
-    .post p {
-      margin: 0 0 10px;
-      line-height: 1.6;
-      color: #555;
-    }
-    .post small {
-      display: block;
-      margin-top: 10px;
-      color: #888;
+
+    .post-content p {
+      color: #383737;
       font-size: 0.9rem;
+      line-height: 1.6;
+      margin: 0 0 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #000;
+    }
+
+    .post-category {
+      background: rgba(255, 107, 107, 0.1);
+      color: var(--primary);
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-weight: 500;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .empty-state h2 {
+      margin: 1rem 0;
+      font-size: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .profile-header {
+        padding: 4rem 1.5rem 3rem;
+      }
+
+      .profile-header h1 {
+        font-size: 2rem;
+      }
+
+      .profile-actions {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .profile-btn {
+        justify-content: center;
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
+  <%- include('components/navbar') %>
+
+  <div class="profile-header">
+    <h1>Welcome, <%= username %></h1>
+    <div class="profile-actions">
+      <a href="/create" class="profile-btn primary">
+        <span class="material-icons-round">add_circle</span>
+        Create Post
+      </a>
+      <a href="/edit-profile" class="profile-btn secondary">
+        <span class="material-icons-round">edit</span>
+        Edit Profile
+      </a>
+      <a href="/logout" class="profile-btn secondary">
+        <span class="material-icons-round">logout</span>
+        Logout
+      </a>
+      <a href="/delete-account" class="profile-btn danger">
+        <span class="material-icons-round">warning</span>
+        Delete Account
+      </a>
+    </div>
+  </div>
+  
   <div class="container">
-    <h1>Welcome, <%= username %>!</h1>
-    <p>This is your profile. Below are your posts in LIFO order.</p>
-    <a href="/logout">Logout</a>
-    
-    <h2>Your Posts</h2>
     <% if (posts.length > 0) { %>
-      <% posts.forEach(post => { %>
-        <div class="post">
-            <h3><%= post.title %></h3>
-            <p><%= post.content %></p>
-            <small>Posted on <%= post.created_at.toDateString() %> | 
-                Category: <%= post.category ? post.category.name : 'No Category' %></small>
-    
-            <% if (post.thumbnail_url) { %>
-                <img src="<%= post.thumbnail_url %>" alt="Thumbnail" style="width: 100px; height: auto;">
-            <% } %>
-        </div>
-    <% }) %>
-    
+      <div class="post-wrapper">
+        <% posts.forEach(post => { %>
+          <div class="post-card">
+            <img src="<%= post.thumbnail_url %>" alt="Thumbnail" 
+                 onerror="this.onerror=null;this.src='./uploads/no<%= Math.floor(Math.random() * 2) + 1 %>.jpg';">
+            <div class="post-content">
+              <h3><%= post.title %></h3>
+              <p><%= post.content %></p>
+              <div class="post-meta">
+                <span><%= post.created_at.toDateString() %></span>
+                <span class="post-category">
+                  <%= post.category ? post.category.name : 'General' %>
+                </span>
+              </div>
+                            <div class="post-action " style="position: relative; display: flex; justify-content: space-between; align-items: center;">
+                <a href="/create/<%= post.id %>" class="material-icons-round" style="background: var(--secondary); color: white; border: none; border-radius: 50%; padding: 0.5rem; cursor: pointer; transition: background 0.3s ease;">
+                  edit
+                </a>
+                <form action="/create/delete/<%= post.id %>" method="POST" class="delete-form">
+                    <button type="submit" class="material-icons-round" style="background: var(--primary); color: white; border: none; border-radius: 50%; padding: 0.5rem; cursor: pointer; transition: background 0.3s ease;">
+                    delete
+                    </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
     <% } else { %>
-      <p>No posts yet.</p>
+      <div class="empty-state">
+        <span class="material-icons-round" style="font-size: 3rem; color: var(--primary);">article</span>
+        <h2>No Posts Yet</h2>
+        <p>Start sharing your ideas with the community</p>
+        <a href="/create" class="profile-btn primary">
+          <span class="material-icons-round">add_circle</span>
+          Create First Post
+        </a>
+      </div>
     <% } %>
   </div>
+  
+  <%- include('components/footer') %>
+
+  <script>
+    // Add hover effect consistency
+    document.querySelectorAll('.post-card').forEach(card => {
+      card.addEventListener('mouseover', () => {
+        card.style.transform = 'translateY(-5px)';
+      });
+      card.addEventListener('mouseout', () => {
+        card.style.transform = 'translateY(0)';
+      });
+    });
+  </script>
 </body>
 </html>
