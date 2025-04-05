@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
   <style>
     :root {
       --primary: #f87d02;
@@ -21,7 +22,6 @@
       min-height: 100vh;
       margin: 0;
       padding-top: 70px;
-      
     }
 
     .hero {
@@ -151,14 +151,19 @@
       background: #f87002;
     }
 
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 2.5rem;
-      }
-      
-      .post-wrapper {
-        grid-template-columns: 1fr;
-      }
+    .icon {
+      cursor: pointer;
+      font-size: 24px;
+      transition: color 0.3s ease, border 0.3s ease;
+    }
+
+    .like-icon.liked {
+      color: red;
+    }
+
+    .save-icon.saved {
+      color: #f8b102;
+      border: 2px solid black;
     }
   </style>
 </head>
@@ -192,7 +197,7 @@
             <img src="<%= post.thumbnail_url %>" alt="Thumbnail" 
                  onerror="this.onerror=null;this.src='./uploads/no<%= Math.floor(Math.random() * 2) + 1 %>.jpg';">
             <div class="post-content">
-              <h3><%= post.title %></h3>
+              <h3><%= post.title.length > 50 ? post.title.substring(0, 50) + '...' : post.title %></h3>
               <p><%= post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content %></p>
               <div class="post-meta">
                 <span><%= post.created_at.toDateString() %></span>
@@ -202,11 +207,19 @@
               </div>
               <a href="/post/<%= post.id %>" class="profile-btn">
                 Read More
-              </a>
+              </a><br>
+
+              <i class="material-icons icon like-icon <%= post.likedByUser ? 'liked' : '' %>" data-post-id="<%= post.post_id %>">favorite</i>
+              <!-- <span><%= post.likeCount %> Likes</span> -->
+
+
+              <i class="material-icons icon save-icon <%= post.savedByUser ? 'saved' : '' %>" data-post-id="<%= post.post_id %>">bookmark</i>
+              <!-- <span><%= post.saveCount %> Saves</span> -->
             </div>
           </div>
         <% }) %>
       </div>
+      
     <% } else { %>
       <div class="empty-state">
         <span class="material-icons-round">article</span>
@@ -219,6 +232,52 @@
       </div>
     <% } %>
   </div>
+
   <%- include('components/footer') %>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Like and Save Click Events
+      document.querySelectorAll('.like-icon').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+          const postId = e.target.getAttribute('data-post-id');
+          const isLiked = e.target.classList.contains('liked');
+          const method = isLiked ? 'DELETE' : 'POST';
+          const route = isLiked ? `/likeRoute/${postId}/unlike` : `/likeRoute/${postId}/like`;
+
+          try {
+            const response = await fetch(route, { method });
+            const result = await response.json();
+            if (result.likes !== undefined) {
+              e.target.classList.toggle('liked', !isLiked);
+              e.target.nextElementSibling.textContent = `${result.likes} Likes`;
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        });
+      });
+
+      document.querySelectorAll('.save-icon').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+          const postId = e.target.getAttribute('data-post-id');
+          const isSaved = e.target.classList.contains('saved');
+          const method = isSaved ? 'DELETE' : 'POST';
+          const route = isSaved ? `/savedPostRoute/${postId}/unsave` : `/savedPostRoute/${postId}/save`;
+
+          try {
+            const response = await fetch(route, { method });
+            const result = await response.json();
+            if (result.saves !== undefined) {
+              e.target.classList.toggle('saved', !isSaved);
+              e.target.nextElementSibling.textContent = `${result.saves} Saves`;
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>

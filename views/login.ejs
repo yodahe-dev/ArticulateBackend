@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+
   <style>
-    /* General Styles */
     body {
       font-family: 'Poppins', sans-serif;
       background-color: #f4f7fb;
@@ -16,19 +16,19 @@
     }
 
     .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 30px;
       background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      margin-top: 50px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
       text-align: center;
-      color: #2e3b4e;
-      margin-bottom: 20px;
+      color: #f8b102;
+      margin-bottom: 25px;
+      font-weight: 600;
     }
 
     form {
@@ -38,14 +38,13 @@
 
     label {
       margin: 10px 0 5px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #555;
     }
 
     input {
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
+      padding: 12px;
+      border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 1rem;
       outline: none;
@@ -53,23 +52,24 @@
     }
 
     input:focus {
-      border-color: #4e73df;
+      border-color: #f8b102;
     }
 
     button {
-      padding: 12px 20px;
-      background-color: #4e73df;
+      margin-top: 15px;
+      padding: 14px;
+      background-color: #f8b102;
       color: white;
       font-size: 1rem;
       font-weight: 600;
-      border-radius: 25px;
+      border-radius: 30px;
       border: none;
       cursor: pointer;
       transition: background-color 0.3s;
     }
 
     button:hover {
-      background-color: #2e59d9;
+      background-color: #e3a100;
     }
 
     .signup-link {
@@ -78,42 +78,65 @@
     }
 
     .signup-link a {
-      color: #4e73df;
+      color: #f8b102;
       text-decoration: none;
       font-weight: 600;
     }
 
     .signup-link a:hover {
-      color: #2e59d9;
+      text-decoration: underline;
     }
 
-    /* Responsive Styles */
+    /* Toast Styles */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #fff;
+      z-index: 9999;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease, transform 0.3s ease;
+    }
+
+    .toast.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast-success { background-color: #28a745; }
+    .toast-error   { background-color: #dc3545; }
+    .toast-warning { background-color: #ffc107; color: #333; }
+
     @media (max-width: 768px) {
       .container {
-        margin-top: 20px;
-        padding: 15px;
+        margin: 20px;
+        padding: 20px;
       }
 
-      input {
-        font-size: 0.9rem;
-      }
-
-      button {
-        font-size: 1rem;
+      input, button {
+        font-size: 0.95rem;
       }
     }
   </style>
 </head>
+
 <body>
 
   <div class="container">
     <h1>Login</h1>
     <form action="/login" method="POST">
       <label for="email">Email:</label>
-      <input type="email" name="email" required>
+      <input type="email" name="email" required />
 
-      <label for="password">Password:</label>
-      <input type="password" name="password_hash" required>
+      <label for="password_hash">Password:</label>
+      <input type="password" name="password_hash" required />
 
       <button type="submit">Login</button>
     </form>
@@ -122,6 +145,22 @@
       <p>Don't have an account? <a href="/signup">Sign up</a></p>
     </div>
   </div>
+
+  <!-- Toast Container -->
+  <script>
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type} show`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+      }, 3000);
+    }
+  </script>
 
 </body>
 </html>
