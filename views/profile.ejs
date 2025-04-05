@@ -107,6 +107,7 @@
     }
 
     .post-card {
+      max-width: 400px;
       background: white;
       border-radius: 16px;
       overflow: hidden;
@@ -216,10 +217,14 @@
         <span class="material-icons-round">logout</span>
         Logout
       </a>
-      <a href="/delete-account" class="profile-btn danger">
-        <span class="material-icons-round">warning</span>
-        Delete Account
-      </a>
+<!-- Updated Delete Account Button (Now Form-Based POST Request) -->
+<form action="/profile/delete-account" method="POST">
+  <button type="submit" class="profile-btn danger">
+    <span class="material-icons-round">warning</span>
+    Delete Account
+  </button>
+</form>
+
     </div>
   </div>
   

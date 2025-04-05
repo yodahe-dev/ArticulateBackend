@@ -20,9 +20,8 @@
   }
 
   .nav-container {
-    max-width: 1200px;
     margin: 0 auto;
-    padding: 1rem 2rem;
+    padding: 1rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -30,7 +29,7 @@
 
   .nav-brand {
     color: var(--primary);
-    font-family: 'Press Start 2P', cursive;
+    font-family: '';
     font-size: 1.8rem;
     font-weight: 700;
     text-decoration: none;
@@ -124,8 +123,20 @@
 
     <div class="nav-links" id="navLinks">
       <a href="/" class="nav-link" data-path="/"> <span class="material-icons-round">home</span> Home </a>
+      <a href="/posts" class="nav-link" data-path="/posts"> <span class="material-icons-round">article</span> Posts </a>
       <a href="/create" class="nav-link" data-path="/create"> <span class="material-icons-round">add_circle</span> Create </a>
       <a href="/profile" class="nav-link" data-path="/profile"> <span class="material-icons-round">person</span> Profile </a>
+      
+      <% if (role === 'admin') { %>
+        <a href="/admin" class="nav-link admin-link" data-path="/admin">
+          <span class="material-icons-round">admin_panel_settings</span> Admin Dashboard
+        </a>
+      <% } %>
+      <% if (role === 'subadmin') { %>
+        <a href="/subadmin" class="nav-link subadmin-link" data-path="/subadmin">
+          <span class="material-icons-round">admin_panel_settings</span> Subadmin Dashboard
+        </a>
+      <% } %>
     </div>
   </div>
 </nav>
