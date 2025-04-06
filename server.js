@@ -3,26 +3,30 @@ const app = express();
 const session = require('express-session');
 const path = require('path');
 const db = require('./models');
+const methodOverride = require('method-override');
+const { isAuthenticated, isNotAuthenticated, isAdminOrSubadmin } = require('./middleware/authMiddleware');
 
-// Import Routes
+// Import routes
 const signupRoute = require('./routes/signupRoute');
 const loginRoute = require('./routes/loginRoute');
 const homeRoute = require('./routes/homeRoute');
 const profileRoute = require('./routes/profileRoute');
-const createRoute = require('./routes/createRoute'); // Import createRoute
+const createRoute = require('./routes/createRoute');
+const likeRoute = require('./routes/likeRoute');
+const savedPostRoute = require('./routes/savedPostRoute');
+const categoryRoute = require('./routes/categoryRoute');
+const commentRoute = require('./routes/commentRoute');
 
-// Import Middleware
-const { isAuthenticated, isNotAuthenticated } = require('./middleware/authMiddleware');
-
-// Set EJS as the View Engine
+// Setup view engine
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-// Middleware
+// Middleware to parse requests
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(methodOverride('_method'));
 
-// Configure Sessions
+// Session middleware
 app.use(
   session({
     secret: 'your-secret-key',
@@ -31,7 +35,15 @@ app.use(
   })
 );
 
-// Serve Static Files (For Uploaded Images)
+// Middleware to pass role to the frontend
+app.use((req, res, next) => {
+  if (req.session.role) {
+    res.locals.role = req.session.role; // Make role available in the views
+  }
+  next();
+});
+
+// Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
@@ -45,16 +57,34 @@ app.get('/login', isNotAuthenticated, (req, res) => {
 });
 app.post('/login', isNotAuthenticated, loginRoute);
 
-app.use('/home', isAuthenticated, homeRoute);
+app.use('/', isAuthenticated, homeRoute);
 app.use('/profile', isAuthenticated, profileRoute);
-app.use('/create', isAuthenticated, createRoute); // Add Create Post Route
+app.use('/create', isAuthenticated, createRoute);
 
-// Redirect root to /home
-app.get('/', isAuthenticated, (req, res) => {
-  res.redirect('/home');
+app.use('/likeRoute', likeRoute);
+app.use('/savedPostRoute', savedPostRoute);
+
+app.use('/category', isAuthenticated, isAdminOrSubadmin, categoryRoute);
+app.use('/', commentRoute);
+
+// Logout route
+app.get('/logout', isAuthenticated, (req, res) => {
+  delete req.session.date;
+
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to log out' });
+    }
+    res.redirect('/login');
+  });
 });
 
-// Sync Database and Start Server
+// Error handling
+app.use((req, res) => {
+  res.status(404).send('Page not found');
+});
+
+// Start the server
 db.sequelize.sync().then(() => {
   app.listen(5000, () => {
     console.log('Server is running on http://localhost:5000');

@@ -10,11 +10,11 @@ function hasRepetitiveChars(password) {
 }
 
 function isValidPassword(password) {
-  const lengthCheck = /^.{8,}$/; // Minimum 8 characters
-  const upperCheck = /[A-Z]/; // At least one uppercase letter
-  const lowerCheck = /[a-z]/; // At least one lowercase letter
-  const digitCheck = /\d/; // At least one digit
-  const specialCheck = /[!@#$%^&*(),.?":{}|<>]/; // At least one special character
+  const lengthCheck = /^.{8,}$/;
+  const upperCheck = /[A-Z]/;
+  const lowerCheck = /[a-z]/;
+  const digitCheck = /\d/;
+  const specialCheck = /[!@#$%^&*(),.?":{}|<>]/;
   
   return lengthCheck.test(password) && upperCheck.test(password) && lowerCheck.test(password) &&
          digitCheck.test(password) && specialCheck.test(password);
@@ -61,7 +61,9 @@ router.post('/signup', async (req, res) => {
     });
 
     req.session.userId = newUser.user_id;
-    res.redirect('/');
+    req.session.role = 'user';
+
+    res.redirect('/login');
 
   } catch (error) {
     console.error(error);

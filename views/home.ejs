@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+  <style>
+    :root {
+      --primary: #f87d02;
+      --secondary: #f8b102;
+      --text: #2d3748;
+      --text-light: #4a5568;
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(150deg, #f8fafc 0%, #f1f5f9 100%);
+      color: var(--text);
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 70px;
+    }
+
+    .hero {
+      background: linear-gradient(45deg, #f87402, #f88802, #f8b102);
+      color: white;
+      min-height: 400px;
+      padding: 8rem 1.5rem 6rem;
+      margin-bottom: 0.2rem;
+      clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .category-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      background: rgba(248, 125, 2, 0.1);
+      color: var(--primary);
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      margin: 0.5rem;
+    }
+
+    .category-btn:hover {
+      background: rgba(248, 125, 2, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .post-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .post-card {
+      max-width: 400px;
+      text-align: center;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .post-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .post-content {
+      padding: 1.5rem;
+    }
+
+    .post-content h3 {
+      margin: 0 0 0.5rem;
+      color: #000;
+      font-size: 1.25rem;
+    }
+
+    .post-content p {
+      color: #343434;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 0 0 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #2d3748;
+    }
+
+    .post-category {
+      background: rgba(248, 125, 2, 0.1);
+      color: var(--primary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .profile-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.75rem 7rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      background: var(--primary);
+      color: white;
+      margin-top: 1rem;
+    }
+
+    .profile-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      background: #f87002;
+    }
+
+    .icon {
+      cursor: pointer;
+      font-size: 24px;
+      transition: color 0.3s ease, border 0.3s ease;
+    }
+
+    .like-icon.liked {
+      color: red;
+    }
+
+    .save-icon.saved {
+      color: #f8b102;
+      border: 2px solid black;
+    }
+  </style>
+</head>
+<body>
+  <%- include('components/navbar') %>
+  <section class="hero">
+    <div>
+      <h1>Nael Blog Creating Platform</h1>
+      <p>Discover tutorials and insights on Nael Blog.</p>
+      <a href="/create" class="profile-btn">
+        <span class="material-icons-round">add_circle</span>
+        Start Posting Blogs
+      </a>
+    </div>
+  </section>
+
+  <div class="container">
+    <h2>Explore Categories</h2>
+    <div>
+      <a href="/" class="category-btn">All</a>
+      <% categories.forEach(category => { %>
+        <a href="/?category=<%= category.category_id %>" class="category-btn"><%= category.name %></a>
+      <% }) %>
+    </div>
+
+    <h2>Latest Posts</h2>
+    <% if (posts.length > 0) { %>
+      <div class="post-wrapper">
+        <% posts.forEach(post => { %>
+          <div class="post-card">
+            <img src="<%= post.thumbnail_url %>" alt="Thumbnail" 
+                 onerror="this.onerror=null;this.src='./uploads/no<%= Math.floor(Math.random() * 2) + 1 %>.jpg';">
+            <div class="post-content">
+              <h3><%= post.title.length > 50 ? post.title.substring(0, 50) + '...' : post.title %></h3>
+              <p><%= post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content %></p>
+              <div class="post-meta">
+                <span><%= post.created_at.toDateString() %></span>
+                <span class="post-category">
+                  <%= post.category ? post.category.name : 'General' %>
+                </span>
+              </div>
+              <a href="/post/<%= post.id %>" class="profile-btn">
+                Read More
+              </a><br>
+
+              <i class="material-icons icon like-icon <%= post.likedByUser ? 'liked' : '' %>" data-post-id="<%= post.post_id %>">favorite</i>
+              <!-- <span><%= post.likeCount %> Likes</span> -->
+
+
+              <i class="material-icons icon save-icon <%= post.savedByUser ? 'saved' : '' %>" data-post-id="<%= post.post_id %>">bookmark</i>
+              <!-- <span><%= post.saveCount %> Saves</span> -->
+            </div>
+          </div>
+        <% }) %>
+      </div>
+      
+    <% } else { %>
+      <div class="empty-state">
+        <span class="material-icons-round">article</span>
+        <h2>No Posts Found</h2>
+        <p>Be the first to share your knowledge!</p>
+        <a href="/create" class="profile-btn">
+          <span class="material-icons-round">add_circle</span>
+          Create First Post
+        </a>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('components/footer') %>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Like and Save Click Events
+      document.querySelectorAll('.like-icon').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+          const postId = e.target.getAttribute('data-post-id');
+          const isLiked = e.target.classList.contains('liked');
+          const method = isLiked ? 'DELETE' : 'POST';
+          const route = isLiked ? `/likeRoute/${postId}/unlike` : `/likeRoute/${postId}/like`;
+
+          try {
+            const response = await fetch(route, { method });
+            const result = await response.json();
+            if (result.likes !== undefined) {
+              e.target.classList.toggle('liked', !isLiked);
+              e.target.nextElementSibling.textContent = `${result.likes} Likes`;
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        });
+      });
+
+      document.querySelectorAll('.save-icon').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+          const postId = e.target.getAttribute('data-post-id');
+          const isSaved = e.target.classList.contains('saved');
+          const method = isSaved ? 'DELETE' : 'POST';
+          const route = isSaved ? `/savedPostRoute/${postId}/unsave` : `/savedPostRoute/${postId}/save`;
+
+          try {
+            const response = await fetch(route, { method });
+            const result = await response.json();
+            if (result.saves !== undefined) {
+              e.target.classList.toggle('saved', !isSaved);
+              e.target.nextElementSibling.textContent = `${result.saves} Saves`;
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -39,11 +39,12 @@ router.post('/create', upload.single('thumbnail'), async (req, res) => {
             thumbnail_url
         });
 
-        res.redirect('/home');
+        res.redirect('/create');
     } catch (error) {
         console.error(error);
         res.status(500).send('Error creating post');
     }
 });
+
 
 module.exports = router;

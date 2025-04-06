@@ -1,24 +1,166 @@
-<!-- views/login.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f7fb;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #f8b102;
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin: 10px 0 5px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    input {
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: #f8b102;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 14px;
+      background-color: #f8b102;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #e3a100;
+    }
+
+    .signup-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .signup-link a {
+      color: #f8b102;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Toast Styles */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #fff;
+      z-index: 9999;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease, transform 0.3s ease;
+    }
+
+    .toast.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast-success { background-color: #28a745; }
+    .toast-error   { background-color: #dc3545; }
+    .toast-warning { background-color: #ffc107; color: #333; }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+
+      input, button {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Login</h1>
-  <form action="/login" method="POST">
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required><br><br>
 
-    <label for="password_hash">Password:</label>
-    <input type="password" id="password_hash" name="password_hash" required><br><br>
+  <div class="container">
+    <h1>Login</h1>
+    <form action="/login" method="POST">
+      <label for="email">Email:</label>
+      <input type="email" name="email" required />
 
-    <button type="submit">Login</button>
-  </form>
+      <label for="password_hash">Password:</label>
+      <input type="password" name="password_hash" required />
 
-  <p>Don't have an account? <a href="/signup">Sign up</a></p>
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="signup-link">
+      <p>Don't have an account? <a href="/signup">Sign up</a></p>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <script>
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type} show`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+      }, 3000);
+    }
+  </script>
+
 </body>
 </html>
