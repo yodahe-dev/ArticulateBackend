@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'Home' %></title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+  <link rel="stylesheet" href="/create.css">
+  <link href="./output.css" rel="stylesheet">
+  <link rel="stylesheet" href="/profile.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <%- include('components/navbar') %>
+  
+  <main>
+    <%- body %>
+  </main>
+
+  <!-- Footer -->
+  <%- include('components/footer') %>
+</body>
+</html>

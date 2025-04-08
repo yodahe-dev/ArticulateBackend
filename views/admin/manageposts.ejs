@@ -1,0 +1,30 @@
+<%- include('../components/navbar') %>
+
+<div class="container mx-auto p-8">
+  <h1 class="text-3xl font-bold mb-4">Manage Posts</h1>
+  
+  <!-- Table of Posts -->
+  <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+    <thead>
+      <tr>
+        <th class="py-2 px-4 text-left">Title</th>
+        <th class="py-2 px-4 text-left">Category</th>
+        <th class="py-2 px-4 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% posts.forEach(post => { %>
+        <tr>
+          <td class="py-2 px-4"><%= post.title %></td>
+          <td class="py-2 px-4"><%= post.category %></td>
+          <td class="py-2 px-4">
+            <a href="/admin/editpost/<%= post.id %>" class="text-blue-500">Edit</a> | 
+            <a href="/admin/deletepost/<%= post.id %>" class="text-red-500">Delete</a>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../components/footer') %>

@@ -1,0 +1,30 @@
+<%- include('../components/navbar') %>
+
+<div class="container mx-auto p-8">
+  <h1 class="text-3xl font-bold mb-4">Manage Users</h1>
+  
+  <!-- Users Table -->
+  <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+    <thead>
+      <tr>
+        <th class="py-2 px-4 text-left">Username</th>
+        <th class="py-2 px-4 text-left">Email</th>
+        <th class="py-2 px-4 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(user => { %>
+        <tr>
+          <td class="py-2 px-4"><%= user.username %></td>
+          <td class="py-2 px-4"><%= user.email %></td>
+          <td class="py-2 px-4">
+            <a href="/admin/edituser/<%= user.id %>" class="text-blue-500">Edit</a> | 
+            <a href="/admin/deleteuser/<%= user.id %>" class="text-red-500">Delete</a>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../components/footer') %>

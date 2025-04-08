@@ -63,4 +63,30 @@ router.delete('/:postId/unlike', isAuthenticated, async (req, res) => {
   }
 });
 
+// Check if user has liked a post
+router.get('/:postId/like-status', isAuthenticated, async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.session.userId;
+
+    // Check if post exists
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check if the user has liked this post
+    const existingLike = await PostLike.findOne({ where: { user_id: userId, post_id: postId } });
+    const likeCount = await PostLike.count({ where: { post_id: postId } });
+
+    res.json({
+      isLiked: !!existingLike, // true if liked, false otherwise
+      likes: likeCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to check like status' });
+  }
+});
+
 module.exports = router;
