@@ -28,30 +28,41 @@ router.post('/signup', async (req, res) => {
   try {
     const { username, email, password_hash } = req.body;
 
+    // Validate email format
     if (!validator.isEmail(email)) {
-      return res.status(400).send('Invalid email format');
+      req.session.flashMessage = { type: 'error', message: 'Invalid email format' };
+      return res.redirect('/signup');
     }
 
+    // Check if email is already in use
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(400).send('Email already in use');
+      req.session.flashMessage = { type: 'error', message: 'Email already in use' };
+      return res.redirect('/signup');
     }
 
+    // Check if username is already taken
     const existingUsername = await User.findOne({ where: { username } });
     if (existingUsername) {
-      return res.status(400).send('Username already taken');
+      req.session.flashMessage = { type: 'error', message: 'Username already taken' };
+      return res.redirect('/signup');
     }
 
+    // Validate password strength
     if (!isValidPassword(password_hash)) {
-      return res.status(400).send('Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a digit, and a special character');
+      req.session.flashMessage = { type: 'error', message: 'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a digit, and a special character' };
+      return res.redirect('/signup');
     }
 
+    // Prevent repetitive characters in the password
     if (hasRepetitiveChars(password_hash)) {
-      return res.status(400).send('Password cannot contain repetitive characters');
+      req.session.flashMessage = { type: 'error', message: 'Password cannot contain repetitive characters' };
+      return res.redirect('/signup');
     }
 
+    // Hash password and create user
     const hashedPassword = await bcrypt.hash(password_hash, 10);
-    const defaultRoleId = '9276a7a0-0e00-11f0-894f-40b03495ba25';
+    const defaultRoleId = '9276a7a0-0e00-11f0-894f-40b03495ba25'; // Default user role ID
 
     const newUser = await User.create({
       username,
@@ -63,11 +74,12 @@ router.post('/signup', async (req, res) => {
     req.session.userId = newUser.user_id;
     req.session.role = 'user';
 
+    req.session.flashMessage = { type: 'success', message: 'Account created successfully! Please login.' };
     res.redirect('/login');
-
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error during signup');
+    req.session.flashMessage = { type: 'error', message: 'An error occurred during signup. Please try again.' };
+    res.redirect('/signup');
   }
 });
 

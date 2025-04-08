@@ -1,6 +1,6 @@
 const { User } = require('../models');
 
-// Check if the user is authenticated (has a session)
+// Check if the user is authenticated
 const isAuthenticated = (req, res, next) => {
   if (req.session.userId) {
     return next();
@@ -8,7 +8,7 @@ const isAuthenticated = (req, res, next) => {
   res.redirect('/login');
 };
 
-// Check if the user is not authenticated (no session)
+// Check if the user is not authenticated
 const isNotAuthenticated = (req, res, next) => {
   if (!req.session.userId) {
     return next();

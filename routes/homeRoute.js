@@ -19,20 +19,20 @@ router.get('/', async (req, res) => {
       },
       include: [
         { model: Category, as: 'category', attributes: ['name'] },
-        { model: PostLike, as: 'PostLikes' }, // Include likes
-        { model: SavedPost, as: 'SavedPosts', where: { user_id: req.session.userId }, required: false }, // Include saved posts
+        { model: PostLike, as: 'PostLikes' },
+        { model: SavedPost, as: 'SavedPosts', where: { user_id: req.session.userId }, required: false },
         { 
           model: Comment, 
-          as: 'Comments',  // Include comments for each post
+          as: 'Comments', 
           include: {
-            model: User,  // Include user to show the commenter's username
+            model: User,
             as: 'User',
             attributes: ['username']
           }
         }
       ],
       order: [['created_at', 'DESC']],
-      limit: 3  // Limit to the latest 3 posts
+      limit: 3
     };
 
     if (categoryFilter) {
@@ -42,7 +42,6 @@ router.get('/', async (req, res) => {
     const posts = await Post.findAll(postQuery);
     const categories = await Category.findAll();
 
-    // Calculate likeCount and saveCount
     const postsWithCounts = posts.map(post => {
       return {
         ...post.toJSON(),
@@ -53,9 +52,13 @@ router.get('/', async (req, res) => {
       };
     });
 
-    // Render posts and categories with like and save counts
-    res.render('home', { username: user.username, posts: postsWithCounts, categories });
-    
+    res.render('home', {
+      username: user.username, 
+      posts: postsWithCounts, 
+      categories,
+      title: 'Home'
+    });
+
   } catch (error) {
     console.error(error);
     res.status(500).send('Error loading posts');
@@ -70,54 +73,121 @@ router.get('/posts', async (req, res) => {
   try {
     const user = await User.findByPk(req.session.userId);
     const categoryFilter = req.query.category;
+    const searchQuery = req.query.search || '';
+    const postsPerPage = 9;
+    const currentPage = parseInt(req.query.page, 10) || 1;
 
+    // Construct query for posts with filters, pagination, and related models
     const postQuery = {
       where: {
         user_id: { [Op.ne]: req.session.userId },
+        ...(categoryFilter ? { category_id: categoryFilter } : {}),
+        ...(searchQuery ? { title: { [Op.iLike]: `%${searchQuery}%` } } : {}),  // Search filter
       },
       include: [
         { model: Category, as: 'category', attributes: ['name'] },
-        { model: PostLike, as: 'PostLikes' }, // Include likes
-        { model: SavedPost, as: 'SavedPosts', where: { user_id: req.session.userId }, required: false }, // Include saved posts
+        { model: PostLike, as: 'PostLikes' },
+        { model: SavedPost, as: 'SavedPosts', where: { user_id: req.session.userId }, required: false },
         { 
           model: Comment, 
-          as: 'Comments',  // Include comments for each post
+          as: 'Comments', 
           include: {
-            model: User,  // Include user to show the commenter's username
+            model: User,
             as: 'User',
             attributes: ['username']
           }
         }
       ],
       order: [['created_at', 'DESC']],
+      limit: postsPerPage,
+      offset: (currentPage - 1) * postsPerPage,
     };
 
-    if (categoryFilter) {
-      postQuery.where.category_id = categoryFilter;
-    }
+    // Fetch posts, categories, and total post count for pagination
+    const [posts, totalPosts, categories] = await Promise.all([
+      Post.findAll(postQuery),
+      Post.count({ where: postQuery.where }),  // Count posts with the same filters
+      Category.findAll()
+    ]);
 
-    const posts = await Post.findAll(postQuery);
-    const categories = await Category.findAll();
+    // Add like and save counts to posts
+    const postsWithCounts = posts.map(post => ({
+      ...post.toJSON(),
+      likeCount: post.PostLikes.length,
+      saveCount: post.SavedPosts.length,
+      likedByUser: post.PostLikes.some(like => like.user_id === req.session.userId),
+      savedByUser: post.SavedPosts.length > 0,
+    }));
 
-    // Calculate likeCount and saveCount
-    const postsWithCounts = posts.map(post => {
-      return {
-        ...post.toJSON(),
-        likeCount: post.PostLikes.length,
-        saveCount: post.SavedPosts.length,
-        likedByUser: post.PostLikes.some(like => like.user_id === req.session.userId),
-        savedByUser: post.SavedPosts.length > 0,
-      };
+    // Render posts page with pagination and filters
+    res.render('post', {
+      username: user.username, 
+      posts: postsWithCounts, 
+      categories,
+      title: 'Posts',
+      totalPosts,
+      postsPerPage,
+      currentPage,
+      searchQuery,  // Pass search query to the frontend
+      categoryFilter,  // Add categoryFilter to the template context
+      currentUser: user,
     });
 
-    // Render posts and categories with like and save counts
-    res.render('post', { username: user.username, posts: postsWithCounts, categories });
-    
   } catch (error) {
     console.error(error);
     res.status(500).send('Error loading posts');
   }
 });
+
+router.get('/post/:id', async (req, res) => {
+  try {
+    const postId = req.params.id;
+    console.log('Post ID:', postId);  // Add this to check the value of postId
+
+    // Fetch the post by ID, including category, likes, saved posts, and comments
+    const post = await Post.findByPk(postId, {
+      include: [
+        { model: Category, as: 'category', attributes: ['name'] },
+        { model: PostLike, as: 'PostLikes' },
+        { model: SavedPost, as: 'SavedPosts', where: { user_id: req.session.userId }, required: false },
+        { 
+          model: Comment, 
+          as: 'Comments', 
+          include: {
+            model: User,
+            as: 'User',
+            attributes: ['username']
+          }
+        }
+      ]
+    });
+
+    if (!post) {
+      return res.status(404).send('Post not found');
+    }
+
+    // Add like and save counts to the post
+    const postWithCounts = {
+      ...post.toJSON(),
+      likeCount: post.PostLikes.length,
+      saveCount: post.SavedPosts.length,
+      likedByUser: post.PostLikes.some(like => like.user_id === req.session.userId),
+      savedByUser: post.SavedPosts.length > 0,
+    };
+
+    // Render the post detail page with all data
+    res.render('post-detail', {
+      post: postWithCounts,
+      title: post.title,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching post details');
+  }
+});
+
+
 
 
 module.exports = router;

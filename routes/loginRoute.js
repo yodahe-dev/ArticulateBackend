@@ -1,17 +1,17 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const { User, Role } = require('../models');
-
 const router = express.Router();
 
-// GET: Login Page
 router.get('/login', (req, res) => {
-  const flash = req.session.flashMessage;
+  const flash = req.session.flashMessage || {};  // Default to empty object if no flash message
   delete req.session.flashMessage;
-  res.render('login', { flash }); // Render EJS login page with flash message
+  res.render('login', { 
+    layout: false,  // Disable layout for this page
+    flash 
+  });
 });
 
-// POST: Login Handler
 router.post('/login', async (req, res) => {
   try {
     const { email, password_hash } = req.body;
@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
     // Redirect by role
     const role = user.Role?.role_name;
     if (role === 'admin' || role === 'subadmin') {
-      return res.redirect('/admin');
+      return res.redirect('/profile');
     }
 
     res.redirect('/');
@@ -71,5 +71,6 @@ router.post('/login', async (req, res) => {
     res.redirect('/login');
   }
 });
+
 
 module.exports = router;

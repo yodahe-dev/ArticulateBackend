@@ -1,276 +1,281 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
-  <style>
-    :root {
-      --primary: #f87d02;
-      --secondary: #f8b102;
-      --text: #2d3748;
-      --text-light: #4a5568;
-      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-    }
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(150deg, #f8fafc 0%, #f1f5f9 100%);
-      color: var(--text);
-      min-height: 100vh;
-      margin: 0;
-      padding-top: 70px;
-    }
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    .hero {
-      background: linear-gradient(45deg, #f87402, #f88802, #f8b102);
-      color: white;
-      min-height: 400px;
-      padding: 8rem 1.5rem 6rem;
-      margin-bottom: 0.2rem;
-      clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-      text-align: center;
-    }
+<style>
+  body { font-family: 'Poppins', sans-serif; }
+  .like-icon.liked { color: #ef4444; }
+  .save-icon.saved { color: #f8b102; }
+  .category-slider {
+    display: flex;
+    gap: 1rem;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
 
-    .hero h1 {
-      font-size: 3.5rem;
-      font-weight: 700;
-    }
+  .category-slider a {
+    flex-shrink: 0;
+  }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
+  .prev-slide, .next-slide {
+    background-color: #f8b102;
+    color: white;
+    padding: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .category-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      background: rgba(248, 125, 2, 0.1);
-      color: var(--primary);
-      font-weight: 500;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      margin: 0.5rem;
-    }
+  .prev-slide:hover, .next-slide:hover {
+    background-color: #e0a500;
+  }
 
-    .category-btn:hover {
-      background: rgba(248, 125, 2, 0.2);
-      transform: translateY(-2px);
-    }
+  .prev-slide span, .next-slide span {
+    font-size: 24px;
+  }
 
-    .post-wrapper {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
+  /* Image improvements */
+  .team-member img {
+    width: 120px; /* Adjusted for better responsiveness */
+    height: 120px; /* Adjusted for better responsiveness */
+    object-fit: cover;
+  }
 
-    .post-card {
-      max-width: 400px;
-      text-align: center;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-      position: relative;
-    }
+  .team-member {
+    text-align: center;
+  }
 
-    .post-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
+  .team-member h3 {
+    font-size: 1.25rem;
+  }
 
-    .post-card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-bottom: 3px solid var(--primary);
-    }
-
-    .post-content {
-      padding: 1.5rem;
-    }
-
-    .post-content h3 {
-      margin: 0 0 0.5rem;
-      color: #000;
-      font-size: 1.25rem;
-    }
-
-    .post-content p {
-      color: #343434;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      margin: 0 0 1rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .post-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      color: #2d3748;
-    }
-
-    .post-category {
-      background: rgba(248, 125, 2, 0.1);
-      color: var(--primary);
-      padding: 0.25rem 0.5rem;
-      border-radius: 6px;
-      font-weight: 500;
-    }
-
-    .profile-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0.75rem 7rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      background: var(--primary);
-      color: white;
-      margin-top: 1rem;
-    }
-
-    .profile-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      background: #f87002;
-    }
-
-    .icon {
-      cursor: pointer;
-      font-size: 24px;
-      transition: color 0.3s ease, border 0.3s ease;
-    }
-
-    .like-icon.liked {
-      color: red;
-    }
-
-    .save-icon.saved {
-      color: #f8b102;
-      border: 2px solid black;
-    }
-  </style>
-</head>
-<body>
-  <%- include('components/navbar') %>
-  <section class="hero">
-    <div>
-      <h1>Nael Blog Creating Platform</h1>
-      <p>Discover tutorials and insights on Nael Blog.</p>
-      <a href="/create" class="profile-btn">
-        <span class="material-icons-round">add_circle</span>
-        Start Posting Blogs
-      </a>
+  .team-member p {
+    font-size: 1rem;
+  }
+</style>
+  <!-- Hero Section -->
+  <section class="relative px-6 lg:px-8 py-10 text-center bg-gray-300">
+    <div class="mx-auto max-w-2xl py-16 sm:py-24 lg:py-28">
+      <div class="hidden sm:mb-8 sm:flex sm:justify-center">
+        <div class="relative rounded-full px-3 py-1 text-sm/6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+          Announcing our next round of funding. <a href="/posts" class="font-semibold text-[#f8b102]"><span class="absolute inset-0" aria-hidden="true"></span>Read more Blogs<span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+      <h1 class="text-4xl md:text-6xl font-bold mb-6 text-gray-900">Nael Blog Platform</h1>
+      <p class="text-xl text-gray-800 mb-8 max-w-2xl mx-auto">
+        Craft your stories, share your knowledge, and connect with passionate readers.
+      </p>
+      <div class="mt-10 flex items-center justify-center gap-x-6">
+        <a href="/create" class="inline-flex items-center bg-[#f8b102] text-white px-8 py-4 rounded-xl hover:bg-[#e0a500] transition-all duration-300 shadow-lg hover:shadow-xl font-medium">
+          <span class="material-icons-round mr-2 text-lg">add_circle</span>
+          Start Writing Now
+        </a>
+        <a href="/profile" class="inline-flex items-center bg-gray-900 text-white px-8 py-4 rounded-xl hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-medium">
+          <span class="material-icons-round mr-2 text-lg">person</span>
+          View Profile
+        </a>
+      </div>
     </div>
   </section>
 
-  <div class="container">
-    <h2>Explore Categories</h2>
-    <div>
-      <a href="/" class="category-btn">All</a>
-      <% categories.forEach(category => { %>
-        <a href="/?category=<%= category.category_id %>" class="category-btn"><%= category.name %></a>
-      <% }) %>
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-16">
+    <!-- Category Slider Section -->
+    <div class="mb-16">
+      <div class="flex items-center overflow-x-hidden">
+        <div class="flex gap-3 transition-transform duration-300 ease-in-out category-slider">
+          <a href="/" class="px-5 py-1.5 rounded-full bg-gray-100 text-gray-800 text-sm font-medium hover:bg-[#f8b102]/20 hover:text-[#f8b102] border border-transparent transition duration-200">
+            All
+          </a>
+          <% categories.forEach(category => { %>
+            <a href="/posts/?category=<%= category.category_id %>" 
+              class="px-5 py-1.5 rounded-full bg-gray-100 text-gray-800 text-sm font-medium 
+              hover:bg-[#f8b102]/20 hover:text-[#f8b102] border border-transparent transition duration-200">
+              <%= category.name %>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+      <!-- Slider Controls with Icons -->
+      <div class="flex justify-between mt-4 items-center">
+        <button class="prev-slide bg-[#f8b102] text-white px-4 py-2 rounded-full">
+          <span class="material-icons">arrow_back</span>
+        </button>
+        <button class="next-slide bg-[#f8b102] text-white px-4 py-2 rounded-full">
+          <span class="material-icons">arrow_forward</span>
+        </button>
+      </div>
     </div>
 
-    <h2>Latest Posts</h2>
+    <!-- Posts Grid -->
     <% if (posts.length > 0) { %>
-      <div class="post-wrapper">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         <% posts.forEach(post => { %>
-          <div class="post-card">
-            <img src="<%= post.thumbnail_url %>" alt="Thumbnail" 
-                 onerror="this.onerror=null;this.src='./uploads/no<%= Math.floor(Math.random() * 2) + 1 %>.jpg';">
-            <div class="post-content">
-              <h3><%= post.title.length > 50 ? post.title.substring(0, 50) + '...' : post.title %></h3>
-              <p><%= post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content %></p>
-              <div class="post-meta">
-                <span><%= post.created_at.toDateString() %></span>
-                <span class="post-category">
+          <div class="bg-white group rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="relative overflow-hidden rounded-t-2xl">
+              <img src="<%= post.thumbnail_url %>" alt="Thumbnail" 
+                class="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
+                onerror="this.onerror=null;this.src='./uploads/no<%= Math.floor(Math.random() * 2) + 1 %>.jpg';">
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 h-24"></div>
+            </div>
+
+            <div class="p-6">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="text-sm text-gray-500"><%= post.created_at.toDateString() %></span>
+                <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+                <span class="text-sm font-medium text-[#f8b102]">
                   <%= post.category ? post.category.name : 'General' %>
                 </span>
               </div>
-              <a href="/post/<%= post.id %>" class="profile-btn">
-                Read More
-              </a><br>
 
-              <i class="material-icons icon like-icon <%= post.likedByUser ? 'liked' : '' %>" data-post-id="<%= post.post_id %>">favorite</i>
-              <!-- <span><%= post.likeCount %> Likes</span> -->
+              <h3 class="text-xl font-bold mb-3 text-gray-900 hover:text-[#f8b102] transition-colors">
+                <%= post.title.length > 50 ? post.title.substring(0, 50) + '...' : post.title %>
+              </h3>
+              <p class="text-gray-600 mb-6 line-clamp-3">
+                <%= post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content %>
+              </p>
 
-
-              <i class="material-icons icon save-icon <%= post.savedByUser ? 'saved' : '' %>" data-post-id="<%= post.post_id %>">bookmark</i>
-              <!-- <span><%= post.saveCount %> Saves</span> -->
+              <div class="flex justify-between items-center">
+                <a href="/post/<%= post.post_id %>" class="flex items-center text-gray-900 font-medium 
+                  hover:text-[#f8b102] transition-colors">
+                  Read Full Story
+                  <span class="material-icons-round ml-2 text-lg">arrow_forward</span>
+                </a>
+                <div class="flex items-center gap-4">
+                  <button class="like-icon flex items-center text-gray-400 hover:text-red-500 
+                    transition-colors <%= post.likedByUser ? 'liked' : '' %>" data-post-id="<%= post.post_id %>">
+                    <span class="material-icons-round mr-1">favorite</span>
+                  </button>
+                  <button class="save-icon flex items-center text-gray-400 hover:text-[#f8b102] 
+                    transition-colors <%= post.savedByUser ? 'saved' : '' %>" data-post-id="<%= post.post_id %>">
+                    <span class="material-icons-round mr-1">bookmark</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         <% }) %>
       </div>
-      
     <% } else { %>
-      <div class="empty-state">
-        <span class="material-icons-round">article</span>
-        <h2>No Posts Found</h2>
-        <p>Be the first to share your knowledge!</p>
-        <a href="/create" class="profile-btn">
-          <span class="material-icons-round">add_circle</span>
-          Create First Post
-        </a>
+      <!-- Empty State -->
+      <div class="text-center py-20">
+        <div class="max-w-md mx-auto">
+          <span class="material-icons-round text-6xl text-[#f8b102] mb-6">article</span>
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">No Stories Published Yet</h2>
+          <p class="text-gray-600 mb-8">Be the pioneer! Share your first story with our community.</p>
+          <a href="/create" class="inline-flex items-center bg-gray-900 text-white px-8 py-3 rounded-xl 
+            hover:bg-gray-800 transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+            <span class="material-icons-round mr-2">edit</span>
+            Create Your First Post
+          </a>
+        </div>
       </div>
     <% } %>
   </div>
 
-  <%- include('components/footer') %>
-  
+  <!-- About Us Section -->
+  <section class="relative px-6 lg:px-8 py-10 text-center bg-white">
+    <div class="mx-auto max-w-2xl py-16 sm:py-24 lg:py-28">
+      <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">About Us</h2>
+      <p class="text-xl text-gray-800 mb-8 max-w-2xl mx-auto">
+        We are a passionate team dedicated to creating a platform for writers and readers to connect. Whether you're a seasoned author or just getting started, our platform offers a space to share your stories with a global audience.
+      </p>
+      <div class="flex justify-center gap-8 mt-10">
+        <div class="flex flex-col items-center">
+          <span class="material-icons-round text-6xl text-[#f8b102] mb-4">group</span>
+          <h3 class="text-2xl font-semibold text-gray-900">Our Mission</h3>
+          <p class="text-gray-600 mt-2">Empowering storytellers to share their creativity and experiences with the world.</p>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="material-icons-round text-6xl text-[#f8b102] mb-4">work_outline</span>
+          <h3 class="text-2xl font-semibold text-gray-900">Our Vision</h3>
+          <p class="text-gray-600 mt-2">Building a community where every voice is heard and every story finds its audience.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Team Section -->
+  <section class="bg-gray-100 py-16">
+    <div class="mx-auto max-w-6xl px-4 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold mb-10 text-gray-900">Meet Our Team</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+        <div class="team-member">
+          <img src="/uploads/logo-bg.png" alt="Nael" class="rounded-full mb-4">
+          <h3 class="text-xl font-semibold text-gray-900">Nael</h3>
+          <p class="text-gray-600">Founder & CEO</p>
+        </div>
+        <div class="team-member">
+          <img src="/uploads/preson.png" alt="Yodahe" class="rounded-full mb-4">
+          <h3 class="text-xl font-semibold text-gray-900">Yodahe</h3>
+          <p class="text-gray-600">Full-Stack Developer</p>
+        </div>
+        <div class="team-member">
+          <img src="/uploads/logo.png" alt="Surafel" class="rounded-full mb-4">
+          <h3 class="text-xl font-semibold text-gray-900">Surafel</h3>
+          <p class="text-gray-600">Full-Stack Developer</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section class="bg-white py-16">
+    <div class="mx-auto max-w-6xl px-4 text-center">
+      <h2 class="text-4xl font-bold text-gray-900 mb-10">Contact Us</h2>
+      <form action="#" method="POST" class="space-y-8">
+        <input type="text" name="name" class="w-full p-4 rounded-lg border border-gray-300 placeholder-gray-600" placeholder="Your Name">
+        <input type="email" name="email" class="w-full p-4 rounded-lg border border-gray-300 placeholder-gray-600" placeholder="Your Email">
+        <textarea name="message" rows="4" class="w-full p-4 rounded-lg border border-gray-300 placeholder-gray-600" placeholder="Your Message"></textarea>
+        <button type="submit" class="w-full py-3 px-6 bg-[#f8b102] text-white rounded-xl font-medium hover:bg-[#e0a500] transition-all duration-300">Submit</button>
+      </form>
+    </div>
+  </section>
+
   <script>
+
+
     document.addEventListener('DOMContentLoaded', () => {
       // Like and Save Click Events
       document.querySelectorAll('.like-icon').forEach(icon => {
         icon.addEventListener('click', async (e) => {
-          const postId = e.target.getAttribute('data-post-id');
-          const isLiked = e.target.classList.contains('liked');
+          console.log('Like button clicked');
+          const button = e.target.closest('.like-icon'); // Ensure button is selected
+          const postId = button.getAttribute('data-post-id');
+          const isLiked = button.classList.contains('liked');
           const method = isLiked ? 'DELETE' : 'POST';
           const route = isLiked ? `/likeRoute/${postId}/unlike` : `/likeRoute/${postId}/like`;
-
+    
           try {
             const response = await fetch(route, { method });
             const result = await response.json();
             if (result.likes !== undefined) {
-              e.target.classList.toggle('liked', !isLiked);
-              e.target.nextElementSibling.textContent = `${result.likes} Likes`;
+              button.classList.toggle('liked', !isLiked);
             }
           } catch (error) {
             console.error(error);
           }
         });
       });
-
+    
       document.querySelectorAll('.save-icon').forEach(icon => {
         icon.addEventListener('click', async (e) => {
-          const postId = e.target.getAttribute('data-post-id');
-          const isSaved = e.target.classList.contains('saved');
+          console.log('Save button clicked');
+          const button = e.target.closest('.save-icon'); // Ensure button is selected
+          const postId = button.getAttribute('data-post-id');
+          const isSaved = button.classList.contains('saved');
           const method = isSaved ? 'DELETE' : 'POST';
           const route = isSaved ? `/savedPostRoute/${postId}/unsave` : `/savedPostRoute/${postId}/save`;
-
+    
           try {
             const response = await fetch(route, { method });
             const result = await response.json();
             if (result.saves !== undefined) {
-              e.target.classList.toggle('saved', !isSaved);
-              e.target.nextElementSibling.textContent = `${result.saves} Saves`;
+              button.classList.toggle('saved', !isSaved);
             }
           } catch (error) {
             console.error(error);
@@ -278,6 +283,24 @@
         });
       });
     });
+    
+    const prevButton = document.querySelector('.prev-slide');
+    const nextButton = document.querySelector('.next-slide');
+    const slider = document.querySelector('.category-slider');
+    
+    prevButton.addEventListener('click', () => {
+      slider.scrollBy({
+        left: -200,  // Adjust this value based on how much you want to scroll per click
+        behavior: 'smooth'
+      });
+    });
+    
+    nextButton.addEventListener('click', () => {
+      slider.scrollBy({
+        left: 200,  // Adjust this value based on how much you want to scroll per click
+        behavior: 'smooth'
+      });
+    });
+    
   </script>
-</body>
-</html>
+

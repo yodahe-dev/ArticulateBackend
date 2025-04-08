@@ -1,250 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create New Post</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #f87d02;
-      --secondary: #f8b102;
-      --text: #2d3748;
-      --text-light: #4a5568;
-      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-    }
+<div class="max-w-2xl mx-auto bg-white p-6 mt-10 rounded-xl shadow-xl">
+  <form id="createPostForm" action="/create/create" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <!-- Title -->
+    <div>
+      <label for="title" class="block font-medium text-gray-700">Title</label>
+      <input type="text" id="title" name="title" required maxlength="100" placeholder="Enter post title"
+        class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f8b102]">
+      <span id="titleError" class="text-red-500 text-sm hidden">Title is required and should be less than 100 characters</span>
+    </div>
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(150deg, #f8fafc 0%, #f1f5f9 100%);
-      color: var(--text);
-      margin: 0;
-      padding-top: 70px;
-    }
+    <!-- Content -->
+    <div>
+      <label for="content" class="block font-medium text-gray-700">Content</label>
+      <textarea id="content" name="content" required maxlength="100000" rows="5" placeholder="Write your content here..."
+        class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f8b102]"></textarea>
+      <span id="contentError" class="text-red-500 text-sm hidden">Content is required and should be less than 100,000 characters</span>
+    </div>
 
-    .create-hero {
-      background: linear-gradient(45deg, #f87402, #f88802, #f8b102);
-      color: white;
-      padding: 4rem 1.5rem;
-      margin-bottom: 2rem;
-      clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-    }
+    <!-- Category -->
+    <div>
+      <label for="category" class="block font-medium text-gray-700">Category</label>
+      <select id="category" name="category_id" required
+        class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f8b102]">
+        <option value="">Select a category</option>
+        <% categories.forEach(category => { %>
+          <option value="<%= category.category_id %>" data-emoji="<%= ['🌟','🎨','🚀','📚','🍕','⚡','🎉','💡','🌍','🎭','🏆','🍩'][Math.floor(Math.random()*12)] %>">
+            <%= category.name %>
+          </option>
+        <% }) %>
+      </select>
+    </div>
 
-    .create-hero h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      text-align: center;
-      margin: 0;
-    }
-
-    .create-container {
-      max-width: 800px;
-      margin: -4rem auto 2rem;
-      background: white;
-      border-radius: 16px;
-      padding: 2.5rem;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(248, 125, 2, 0.1);
-      position: relative;
-    }
-
-    .form-group {
-      margin-bottom: 2rem;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 0.75rem;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 1rem 1.25rem;
-      border: 2px solid #fed7aa;
-      border-radius: 12px;
-      transition: all 0.3s ease;
-      font-size: 1rem;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 150px;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(248, 125, 2, 0.2);
-    }
-
-    .file-upload {
-      border: 2px dashed #fed7aa;
-      border-radius: 12px;
-      padding: 2rem;
-      text-align: center;
-      position: relative;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      background: rgba(254, 215, 170, 0.1);
-    }
-
-    .file-upload:hover {
-      border-color: var(--primary);
-      background: rgba(248, 125, 2, 0.05);
-      transform: translateY(-2px);
-    }
-
-    .file-upload input[type="file"] {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-    }
-
-    .preview-container {
-      display: none;
-      margin-top: 1.5rem;
-      position: relative;
-    }
-
-    .preview-container img {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-      border-radius: 12px;
-      border: 3px solid var(--primary);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .submit-btn {
-      background: linear-gradient(45deg, #f87402, #f88802, #f8b102);
-      color: white;
-      padding: 1.25rem 2.5rem;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      width: 100%;
-      font-size: 1.1rem;
-      letter-spacing: 0.5px;
-    }
-
-    .submit-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(248, 125, 2, 0.3);
-    }
-
-    select {
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f87d02' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 1rem center;
-      background-size: 1em;
-    }
-
-    .category-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-    }
-  </style>
-</head>
-<body>
-  <%- include('components/navbar') %>
-
-  <div class="create-hero">
-    <h1>Share Your Story</h1>
-  </div>
-
-  <div class="create-container">
-    <form action="/create/create" method="POST" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" id="title" name="title" required placeholder="Enter post title">
+    <!-- Thumbnail Upload -->
+    <div>
+      <label class="block font-medium text-gray-700 mb-2">Thumbnail</label>
+      <div id="upload-area"
+        class="flex items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#f8b102] transition">
+        <span class="text-gray-500">Drag & drop or click to upload</span>
+        <input type="file" name="thumbnail" accept="image/*" id="thumbnail" class="hidden" required>
+        <span id="fileError" class="text-red-500 text-sm hidden">Please upload a valid image file</span>
       </div>
-
-      <div class="form-group">
-        <label for="content">Content</label>
-        <textarea id="content" name="content" required placeholder="Write your content here..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="category">Category</label>
-        <select id="category" name="category_id" required>
-          <option value="">Select a category</option>
-          <% categories.forEach(category => { %>
-            <option value="<%= category.category_id %>" data-emoji="<%= ['🌟','🎨','🚀','📚','🍕','⚡','🎉','💡','🌍','🎭','🏆','🍩'][Math.floor(Math.random()*12)] %>">
-              <%= category.name %>
-            </option>
-          <% }) %>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Thumbnail</label>
-        <div class="file-upload" id="upload-area">
-          <span>Drag & drop or click to upload</span>
-          <input type="file" name="thumbnail" accept="image/*" id="thumbnail">
-        </div>
-        <div class="preview-container" id="preview-container">
-          <img src="#" alt="Preview" id="preview-image">
+      <div id="preview-container" class="relative mt-4 hidden">
+        <img id="preview-image" src="#" alt="Preview"
+          class="mx-auto max-h-64 rounded-lg object-contain transform transition duration-300">
+        <div class="flex justify-center mt-2 space-x-4">
+          <button type="button" onclick="zoom(-0.1)" class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">-</button>
+          <button type="button" onclick="zoom(0.1)" class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">+</button>
         </div>
       </div>
+    </div>
 
-      <button type="submit" class="submit-btn">Publish Post</button>
-    </form>
-  </div>
-  <%- include('components/footer') %>
-  <script>
-    // Image preview functionality
-    document.getElementById('thumbnail').addEventListener('change', function() {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        document.getElementById('preview-container').style.display = 'block';
-        reader.onload = function() {
-          document.getElementById('preview-image').src = reader.result;
-        }
-        reader.readAsDataURL(file);
+    <!-- Submit -->
+    <div class="text-center">
+      <button type="submit" class="bg-[#f8b102] text-white font-bold px-6 py-2 rounded-lg shadow-md hover:bg-[#e89b00] transition">
+        🚀 Publish Post
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const thumbnailInput = document.getElementById('thumbnail');
+  const previewImage = document.getElementById('preview-image');
+  const previewContainer = document.getElementById('preview-container');
+  const fileError = document.getElementById('fileError');
+  const titleInput = document.getElementById('title');
+  const contentInput = document.getElementById('content');
+  const titleError = document.getElementById('titleError');
+  const contentError = document.getElementById('contentError');
+
+  thumbnailInput.addEventListener('change', function () {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      previewContainer.classList.remove('hidden');
+      reader.onload = function () {
+        previewImage.src = reader.result;
+        previewImage.style.scale = 1;
       }
-    });
+      reader.readAsDataURL(file);
+    } else {
+      previewContainer.classList.add('hidden');
+    }
+  });
 
-    // Drag & drop functionality
-    const uploadArea = document.getElementById('upload-area');
-    uploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadArea.style.borderColor = 'var(--primary)';
-    });
+  // Form validation before submit
+  document.getElementById('createPostForm').addEventListener('submit', function(event) {
+    let isValid = true;
 
-    uploadArea.addEventListener('dragleave', () => {
-      uploadArea.style.borderColor = '#e2e8f0';
-    });
+    // Validate title
+    if (!titleInput.value || titleInput.value.length > 100) {
+      titleError.classList.remove('hidden');
+      isValid = false;
+    } else {
+      titleError.classList.add('hidden');
+    }
 
-    uploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const fileInput = document.getElementById('thumbnail');
-      fileInput.files = e.dataTransfer.files;
-      fileInput.dispatchEvent(new Event('change'));
-    });
+    // Validate content
+    if (!contentInput.value || contentInput.value.length > 100000) {
+      contentError.classList.remove('hidden');
+      isValid = false;
+    } else {
+      contentError.classList.add('hidden');
+    }
 
-    // Add emojis to category options
-    document.addEventListener('DOMContentLoaded', () => {
-      const options = document.querySelectorAll('#category option:not(:first-child)');
-      options.forEach(option => {
-        const emoji = option.getAttribute('data-emoji');
-        option.textContent = `${emoji} ${option.textContent}`;
-      });
+    // Validate file input
+    if (!thumbnailInput.files.length || !['image/jpeg', 'image/png', 'image/gif'].includes(thumbnailInput.files[0].type)) {
+      fileError.classList.remove('hidden');
+      isValid = false;
+    } else {
+      fileError.classList.add('hidden');
+    }
+
+    if (!isValid) {
+      event.preventDefault();
+    }
+  });
+
+  // Drag & Drop
+  const uploadArea = document.getElementById('upload-area');
+  uploadArea.addEventListener('click', () => thumbnailInput.click());
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('border-[#f8b102]');
+  });
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('border-[#f8b102]');
+  });
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    thumbnailInput.files = e.dataTransfer.files;
+    thumbnailInput.dispatchEvent(new Event('change'));
+  });
+
+  // Emoji in category
+  document.addEventListener('DOMContentLoaded', () => {
+    const options = document.querySelectorAll('#category option:not(:first-child)');
+    options.forEach(option => {
+      const emoji = option.getAttribute('data-emoji');
+      option.textContent = `${emoji} ${option.textContent}`;
     });
-  </script>
-</body>
-</html>
+  });
+
+  // Zoom function
+  let zoomLevel = 1;
+  function zoom(factor) {
+    zoomLevel = Math.min(2, Math.max(0.5, zoomLevel + factor));
+    previewImage.style.scale = zoomLevel;
+  }
+</script>

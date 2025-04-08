@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+      <!-- Post Title -->
+      <h1 class="text-3xl font-bold text-gray-900 mb-4"><%= post.title %></h1>
+
+      <!-- Post Content -->
+      <div class="mb-6 text-gray-800">
+        <%= post.content %>
+      </div>
+
+      <!-- Post Like & Save Count -->
+      <div class="flex items-center space-x-4 mb-4">
+        <div class="text-gray-600">
+          <span><%= post.likeCount %> Likes</span>
+        </div>
+        <div class="text-gray-600">
+          <span><%= post.saveCount %> Saves</span>
+        </div>
+      </div>
+      <div class="mt-6 bg-gray-900">
+        <form action="/comment" method="POST">
+          <textarea name="content" rows="4" class="w-full p-4 border border-gray-300 rounded" placeholder="Add a comment..."></textarea>
+          <button type="submit" class="mt-2 w-full py-2 bg-amber-500 text-gray-100 rounded-lg">Post Comment</button>
+        </form>
+      </div>
+      <!-- Comments Section -->
+      <div class="border-t border-gray-200 mt-6 pt-4">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Comments</h2>
+
+        <% if (post.Comments.length === 0) { %>
+          <p>No comments yet. Be the first to comment!</p>
+        <% } else { %>
+          <ul>
+            <% post.Comments.forEach(comment => { %>
+              <li class="border-b border-gray-200 py-3">
+                <p class="font-semibold text-gray-800"><%= comment.User.username %>:</p>
+                <p class="text-gray-600"><%= comment.content %></p>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </div>
+      
+    </div>
+  </div>
+<script>
+  
+</script>
+</body>
+</html>
