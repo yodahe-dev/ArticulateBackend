@@ -1,6 +1,7 @@
 const express = require('express');
 const { Post, Category, PostLike, SavedPost, Comment, User } = require('../models');
 const { Op } = require('sequelize');
+const Fuse = require('fuse.js');
 
 const router = express.Router();
 
@@ -65,6 +66,9 @@ router.get('/', async (req, res) => {
   }
 });
 
+
+
+
 router.get('/posts', async (req, res) => {
   if (!req.session.userId) {
     return res.redirect('/signup');
@@ -82,62 +86,83 @@ router.get('/posts', async (req, res) => {
       where: {
         user_id: { [Op.ne]: req.session.userId },
         ...(categoryFilter ? { category_id: categoryFilter } : {}),
-        ...(searchQuery ? { title: { [Op.iLike]: `%${searchQuery}%` } } : {}),  // Search filter
+        ...(searchQuery ? { 
+          [Op.or]: [
+            { title: { [Op.like]: `%${searchQuery}%` } },
+            { content: { [Op.like]: `%${searchQuery}%` } }
+          ]
+        } : {}),
       },
       include: [
         { model: Category, as: 'category', attributes: ['name'] },
         { model: PostLike, as: 'PostLikes' },
         { model: SavedPost, as: 'SavedPosts', where: { user_id: req.session.userId }, required: false },
-        { 
-          model: Comment, 
-          as: 'Comments', 
-          include: {
-            model: User,
-            as: 'User',
-            attributes: ['username']
-          }
-        }
+        { model: Comment, as: 'Comments', include: { model: User, as: 'User', attributes: ['username'] } },
       ],
       order: [['created_at', 'DESC']],
       limit: postsPerPage,
       offset: (currentPage - 1) * postsPerPage,
     };
 
-    // Fetch posts, categories, and total post count for pagination
     const [posts, totalPosts, categories] = await Promise.all([
       Post.findAll(postQuery),
-      Post.count({ where: postQuery.where }),  // Count posts with the same filters
-      Category.findAll()
+      Post.count({ where: postQuery.where }),
+      Category.findAll(),
     ]);
 
-    // Add like and save counts to posts
-    const postsWithCounts = posts.map(post => ({
-      ...post.toJSON(),
-      likeCount: post.PostLikes.length,
-      saveCount: post.SavedPosts.length,
-      likedByUser: post.PostLikes.some(like => like.user_id === req.session.userId),
-      savedByUser: post.SavedPosts.length > 0,
-    }));
+    // If the request is an AJAX request, return posts as JSON
+    const postsWithCounts = posts.map(post => {
+      return {
+        ...post.toJSON(),
+        likeCount: post.PostLikes.length,
+        saveCount: post.SavedPosts.length,
+        likedByUser: post.PostLikes.some(like => like.user_id === req.session.userId),
+        savedByUser: post.SavedPosts.length > 0,
+      };
+    });
 
-    // Render posts page with pagination and filters
+    // Perform fuzzy search only if the searchQuery is provided
+    let relatedPosts = [];
+    if (searchQuery) {
+      const fuseOptions = {
+        keys: ['title', 'content'],
+        threshold: 0.3, // Adjust the threshold as needed
+      };
+
+      const fuse = new Fuse(postsWithCounts, fuseOptions);
+      const results = fuse.search(searchQuery);
+      relatedPosts = results.map(result => result.item);
+    }
+
+    // If related posts are found, merge them with the posts being returned
+    const combinedPosts = relatedPosts.length > 0 ? relatedPosts : postsWithCounts;
+
+    // Return posts (with related content) if no search was provided
+    if (req.xhr) {
+      return res.json({ posts: combinedPosts });
+    }
+
+    // Render the posts (including related content) on the page
     res.render('post', {
-      username: user.username, 
-      posts: postsWithCounts, 
+      username: user.username,
+      posts: combinedPosts,
       categories,
       title: 'Posts',
       totalPosts,
       postsPerPage,
       currentPage,
-      searchQuery,  // Pass search query to the frontend
-      categoryFilter,  // Add categoryFilter to the template context
+      searchQuery,
+      categoryFilter,
       currentUser: user,
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).send('Error loading posts');
   }
 });
+
+
+
 
 router.get('/post/:id', async (req, res) => {
   try {
