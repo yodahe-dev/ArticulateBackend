@@ -2,8 +2,6 @@ const express = require('express');
 const { Post, Category, PostLike, SavedPost, Comment, User } = require('../models');
 const { Op } = require('sequelize');
 
-
-
 router.get('/posts', async (req, res) => {
     if (!req.session.userId) {
       return res.redirect('/signup');
