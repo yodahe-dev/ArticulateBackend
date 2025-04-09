@@ -21,6 +21,9 @@
   </main>
 
   <!-- Footer -->
+<% if (role !== 'admin') { %>
   <%- include('components/footer') %>
+<% } %>
+
 </body>
 </html>

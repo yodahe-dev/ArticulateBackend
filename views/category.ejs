@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Categories</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <div class="container mx-auto p-6 max-w-4xl">
+    <h1 class="text-3xl font-semibold text-center text-gray-800 mb-8">Manage Categories</h1>
+    
+    <!-- Create Category Form -->
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+      <h3 class="text-xl font-semibold text-gray-700 mb-4">Create Category</h3>
+      <form action="/category/create" method="POST" class="flex space-x-4 items-center">
+        <input type="text" name="name" id="name" required class="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Enter category name">
+        <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition">Create</button>
+      </form>
+    </div>
+
+    <!-- Existing Categories List -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+      <h3 class="text-xl font-semibold text-gray-700 mb-4">Existing Categories</h3>
+      <ul id="category-list">
+        <% categories.forEach(category => { %>
+          <li id="category-<%= category.category_id %>" class="flex justify-between items-center bg-gray-50 p-4 mb-4 rounded-lg shadow-sm hover:bg-gray-100 transition">
+            <span id="category-name-<%= category.category_id %>" class="text-lg text-gray-700 font-medium"><%= category.name %></span>
+            <div class="space-x-4">
+              <button class="category-btn edit-btn bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-lg transition" onclick="confirmEditCategory('<%= category.category_id %>', '<%= category.name %>')">Edit</button>
+              <button class="category-btn delete-btn bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition" onclick="confirmDeleteCategory('<%= category.category_id %>')">Delete</button>
+            </div>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Modal for Confirmation -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-96">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Are you sure?</h2>
+      <p class="text-gray-600 mb-6">You are about to perform this action on a category. Do you want to continue?</p>
+      <div class="flex justify-end space-x-4">
+        <button id="modal-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-lg">Cancel</button>
+        <button id="modal-confirm" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedCategoryId = null;
+    let actionType = null;
+
+    // Open modal for edit confirmation
+    function confirmEditCategory(categoryId, currentName) {
+      selectedCategoryId = categoryId;
+      actionType = 'edit';
+      const newName = prompt("Enter new category name:", currentName);
+      if (newName && newName.trim() !== "") {
+        document.getElementById('modal').classList.remove('hidden');
+        document.getElementById('modal-confirm').onclick = () => editCategory(selectedCategoryId, newName);
+      }
+    }
+
+    // Open modal for delete confirmation
+    function confirmDeleteCategory(categoryId) {
+      selectedCategoryId = categoryId;
+      actionType = 'delete';
+      document.getElementById('modal').classList.remove('hidden');
+      document.getElementById('modal-confirm').onclick = () => deleteCategory(selectedCategoryId);
+    }
+
+    // Close the modal
+    document.getElementById('modal-cancel').onclick = function() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    async function deleteCategory(categoryId) {
+      try {
+        const response = await fetch(`/category/delete/${categoryId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          document.getElementById(`category-${categoryId}`).remove();
+          alert("Category deleted successfully!");
+        } else {
+          alert("Failed to delete category.");
+        }
+      } catch (error) {
+        console.error("Error deleting category:", error);
+        alert("Server error while deleting category.");
+      } finally {
+        document.getElementById('modal').classList.add('hidden');
+      }
+    }
+
+    async function editCategory(categoryId, newName) {
+      try {
+        const response = await fetch(`/category/update/${categoryId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName }),
+        });
+
+        if (response.ok) {
+          document.getElementById(`category-name-${categoryId}`).innerText = newName;
+          alert("Category updated successfully!");
+        } else {
+          alert("Failed to update category.");
+        }
+      } catch (error) {
+        console.error("Error updating category:", error);
+        alert("Server error while updating category.");
+      } finally {
+        document.getElementById('modal').classList.add('hidden');
+      }
+    }
+  </script>
+
+</body>
+</html>

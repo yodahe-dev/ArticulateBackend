@@ -28,8 +28,8 @@ exports.createComment = async (req, res) => {
         { model: User, attributes: ['username'] }
       ]
     });
-
-    res.status(201).json({ message: 'Comment added successfully', comment });
+    req.flash('success', 'Comment added successfully!');
+    res.redirect(`/post/${post_id}`);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Something went wrong' });
@@ -45,9 +45,9 @@ exports.getComments = async (req, res) => {
     const comments = await Comment.findAll({
       where: { post_id },
       include: [
-        { model: User, attributes: ['username'] }
+      { model: User, attributes: ['username'] }
       ],
-      order: [['created_at', 'ASC']] // Sorting comments by creation date
+      order: [['created_at', 'DESC']] // Sorting comments by creation date in descending order (LIFO)
     });
 
     if (comments.length === 0) {

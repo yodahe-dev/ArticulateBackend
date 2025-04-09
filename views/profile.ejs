@@ -1,11 +1,9 @@
-<!-- PROFILE PAGE (EJS + Tailwind CSS + JS) -->
-<!-- Modern Profile Header -->
-<div id="profileHeader" class="relative overflow-hidden shadow-lg transition-colors duration-500" style="">
-  <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+<div id="profileHeader" class="relative overflow-hidden shadow-lg transition-colors duration-500 bg-gray-900">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
   <div class="relative z-10 flex flex-col md:flex-row items-center gap-6 p-8">
     <!-- Avatar -->
     <div class="relative">
-      <div class="w-50 h-50 rounded-full overflow-hidden border-4 border-white shadow-lg">
+      <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-lg">
         <% if (user.avatar) { %>
           <img src="../uploads/preson.png" class="w-full h-full object-cover" alt="Avatar">
         <% } else { %>
@@ -15,17 +13,45 @@
     </div>
     <!-- Info -->
     <div class="flex-1 text-white text-center md:text-left">
-      <h1 class="text-4xl font-extrabold uppercase"><%= username %></h1>
+      <h1 class="text-4xl font-extrabold uppercase tracking-wider"><%= username %></h1>
       <p class="text-lg opacity-80 lowercase">@<%= email.split('@')[0] %></p>
+      <div class="mt-4 flex gap-6 justify-center md:justify-start">
+        
+      </div>
+      
+      <!-- Likes and Saves in a row -->
       <div class="mt-4 flex gap-6 justify-center md:justify-start">
         <div class="bg-white/20 px-6 py-3 rounded-xl text-center backdrop-blur-md">
           <p class="text-sm text-white/70">Posts</p>
           <p class="text-2xl font-bold"><%= posts.length %></p>
         </div>
+        <div class="bg-white/20 px-6 py-3 rounded-xl text-center backdrop-blur-md">
+          <p class="text-sm text-white/70">Likes</p>
+          <p class="text-2xl font-bold">1M</p>
+        </div>
+        <div class="bg-white/20 px-6 py-3 rounded-xl text-center backdrop-blur-md">
+          <p class="text-sm text-white/70">Saves</p>
+          <p class="text-2xl font-bold">50k</p>
+        </div>
+      </div>
+
+      <!-- Account Management Buttons -->
+      <div class="mt-6 flex gap-4 justify-center md:justify-start">
+        <button class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl transition-all duration-300" onclick="window.location.href='/remove-account'">
+          Remove Account
+        </button>
+        <button class="bg-red-100 hover:bg-red-700 text-gray-900 px-6 py-2 rounded-xl transition-all duration-300" onclick="">
+          Edit Profile
+        </button>
+        <button class="bg-red-100 hover:bg-red-700 text-gray-900 px-6 py-2 rounded-xl transition-all duration-300" onclick="window.location.href='/logout'">
+          Logout
+        </button>
       </div>
     </div>
   </div>
 </div>
+
+
 
 <main class="max-w-7xl mx-auto px-6 py-10">
   <% if (posts.length === 0) { %>
@@ -57,38 +83,6 @@
     </div>
   <% } %>
 </main>
-<!-- Edit Post Modal -->
-<div id="editPostModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
-  <div class="bg-white rounded-xl p-6 shadow-2xl w-[90%] max-w-md text-center">
-    <h2 class="text-xl font-bold mb-4">Edit Post</h2>
-    <form id="editPostForm" action="/profile/edit-post" method="POST" enctype="multipart/form-data">
-      <input type="hidden" id="editPostId" name="id">
-      <div class="mb-4">
-        <input type="text" id="editPostTitle" name="title" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Post Title" required>
-      </div>
-      <div class="mb-4">
-        <textarea id="editPostContent" name="content" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Post Content" rows="4" required></textarea>
-      </div>
-      <div class="mb-4">
-        <select id="editPostCategory" name="category_id" class="w-full p-3 border border-gray-300 rounded-lg" required>
-          <option value="">Select Category</option>
-          <% categories.forEach(category => { %>
-            <option value="<%= category.id %>"><%= category.name %></option>
-          <% }) %>
-        </select>
-      </div>
-      <div class="mb-4">
-        <label for="editPostThumbnail" class="block text-sm">Change Thumbnail</label>
-        <input type="file" id="editPostThumbnail" name="thumbnail" class="w-full p-3 border border-gray-300 rounded-lg">
-      </div>
-      <div class="mt-4 flex justify-center gap-4">
-        <button type="submit" class="bg-[#f8b102] hover:bg-[#d89a00] text-white px-4 py-2 rounded-lg">Save Changes</button>
-        <button type="button" onclick="closeEditPostModal()" class="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <!-- DELETE Modal -->
 <div id="confirmationModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
   <div class="bg-white rounded-xl p-6 shadow-2xl w-[90%] max-w-md text-center">
@@ -99,8 +93,6 @@
     </div>
   </div>
 </div>
-
-
 <script>
   
   let deletePostUrl = "";
