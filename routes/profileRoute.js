@@ -66,15 +66,23 @@ router.delete('/delete-post/:id', isAuthenticated, async (req, res) => {
   const postId = req.params.id;
 
   try {
+    // Find the post by ID and user ID
     const post = await Post.findOne({ where: { post_id: postId, user_id: userId } });
     if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
 
-    // Optional: delete image file
+    // Optional: delete image file if it exists and is not the default image
     if (post.thumbnail_url && post.thumbnail_url !== '/uploads/default-post.jpg') {
-      const filePath = path.join(__dirname, '..', 'public', post.thumbnail_url);
-      fs.unlink(filePath, err => { if (err) console.error(err); });
+      const filePath = path.join(__dirname, '..', 'public', post.thumbnail_url); // Correct the path to the file
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error('Error deleting file:', err);
+        } else {
+          console.log('Image deleted successfully');
+        }
+      });
     }
 
+    // Delete the post from the database
     await post.destroy();
     res.status(200).json({ success: true });
 

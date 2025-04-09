@@ -5,12 +5,17 @@
       <img src="/uploads/logo.png" class="h-10 rounded-full" alt="Logo">
       <span class="self-center text-2xl font-semibold whitespace-nowrap" style="color: #f8b102;">NaelBlog</span>
     </a>
-
+    
     <!-- Right side button -->
-    <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+    <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse 
+    ">
+      <% if (role === 'admin') { %>
+        <a href="/dashboard" class="text-white" style="background-color: #f8b102; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500;">Dashboard</a>
+        <% } %>
       <% if (role === 'admin' || role === 'subadmin') { %>
-        <a href="/<%= role %>" class="text-white" style="background-color: #f8b102; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500;">Dashboard</a>
+        <a href="/category" class="text-white" style="background-color: #f8b102; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500;">Category</a>
       <% } %>
+      
 
       <!-- Mobile menu toggle -->
       <button id="menuToggle" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-600 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
