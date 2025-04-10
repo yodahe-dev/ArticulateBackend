@@ -2142,3 +2142,11 @@
     }
   }
 }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(150deg, #f8fafc 0%, #f1f5f9 100%);
+  color: var(--text);
+  min-height: 100vh;
+  margin: 0;
+  padding-top: 70px;
+}
