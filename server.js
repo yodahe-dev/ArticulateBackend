@@ -1,3 +1,5 @@
+require('dotenv').config(); // Ensure that .env variables are loaded
+
 const express = require('express');
 const app = express();
 const session = require('express-session');
@@ -18,22 +20,18 @@ const categoryRoute = require('./routes/categoryRoute');
 const commentRoute = require('./routes/commentRoute');
 const flash = require('connect-flash');
 
-
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-
-app.use(ejsLayouts); 
-
+app.use(ejsLayouts);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride('_method'));
 
-
 app.use(
   session({
-    secret: 'your-secret-key',
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: true,
   })
@@ -49,7 +47,7 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   if (req.session.role) {
-    res.locals.role = req.session.role; 
+    res.locals.role = req.session.role;
   }
   next();
 });
@@ -87,12 +85,19 @@ app.get('/logout', isAuthenticated, (req, res) => {
   });
 });
 
+// 404 page handler
 app.use((req, res) => {
   res.status(404).send('Page not found');
 });
 
+// Error handler (for general errors)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
+});
+
 db.sequelize.sync().then(() => {
-  app.listen(5000, () => {
-    console.log('Server is running on http://localhost:5000');
+  app.listen(process.env.PORT || 5000, () => {
+    console.log(`Server is running on http://localhost:${process.env.PORT || 5000}`);
   });
 });
