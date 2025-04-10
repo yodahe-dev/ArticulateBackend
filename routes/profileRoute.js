@@ -70,6 +70,7 @@ router.get('/', isAuthenticated, async (req, res) => {
 
     res.render('profile', {
       user,
+      userId: userId,  // Add this line to pass the user ID
       username: user.username,
       email: user.email,
       user_role: user.Role?.role_name || 'user',
@@ -77,14 +78,15 @@ router.get('/', isAuthenticated, async (req, res) => {
       categories,
       likeCount,
       saveCount,
-      totalPosts,        // Total posts count
-      totalPages,        // Total pages for pagination
-      currentPage,       // Current page number
+      totalPosts,
+      totalPages,
+      currentPage,
       filter,
       success: req.flash('success'),
       error: req.flash('error'),
       title: 'Profile'
     });
+    
 
   } catch (err) {
     console.error('Profile Error:', err);

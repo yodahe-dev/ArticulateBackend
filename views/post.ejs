@@ -230,75 +230,9 @@
             `;
           });
         } else {
-          postsGrid.innerHTML = '<p>No posts found</p>';
+          postsGrid.innerHTML = `<div class="col-span-3 text-center py-20">No posts found</div>`;
         }
       })
       .catch(error => console.error('Error fetching posts:', error));
   }
-
-
-
-  document.addEventListener('DOMContentLoaded', () => {
-    // Like and Save Click Events
-    document.querySelectorAll('.like-icon').forEach(icon => {
-      icon.addEventListener('click', async (e) => {
-        console.log('Like button clicked');
-        const button = e.target.closest('.like-icon'); // Ensure button is selected
-        const postId = button.getAttribute('data-post-id');
-        const isLiked = button.classList.contains('liked');
-        const method = isLiked ? 'DELETE' : 'POST';
-        const route = isLiked ? `/likeRoute/${postId}/unlike` : `/likeRoute/${postId}/like`;
-  
-        try {
-          const response = await fetch(route, { method });
-          const result = await response.json();
-          if (result.likes !== undefined) {
-            button.classList.toggle('liked', !isLiked);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      });
-    });
-  
-    document.querySelectorAll('.save-icon').forEach(icon => {
-      icon.addEventListener('click', async (e) => {
-        console.log('Save button clicked');
-        const button = e.target.closest('.save-icon'); // Ensure button is selected
-        const postId = button.getAttribute('data-post-id');
-        const isSaved = button.classList.contains('saved');
-        const method = isSaved ? 'DELETE' : 'POST';
-        const route = isSaved ? `/savedPostRoute/${postId}/unsave` : `/savedPostRoute/${postId}/save`;
-  
-        try {
-          const response = await fetch(route, { method });
-          const result = await response.json();
-          if (result.saves !== undefined) {
-            button.classList.toggle('saved', !isSaved);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      });
-    });
-  });
-
-  const prevButton = document.querySelector('.prev-slide');
-  const nextButton = document.querySelector('.next-slide');
-  const slider = document.querySelector('.category-slider');
-  
-  prevButton.addEventListener('click', () => {
-    slider.scrollBy({
-      left: -200,  // Adjust this value based on how much you want to scroll per click
-      behavior: 'smooth'
-    });
-  });
-  
-  nextButton.addEventListener('click', () => {
-    slider.scrollBy({
-      left: 200,  // Adjust this value based on how much you want to scroll per click
-      behavior: 'smooth'
-    });
-  });
-  
 </script>
