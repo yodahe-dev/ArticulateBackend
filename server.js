@@ -6,8 +6,6 @@ const db = require('./models');
 const methodOverride = require('method-override');
 const ejsLayouts = require('express-ejs-layouts'); // Import express-ejs-layouts
 const { isAuthenticated, isNotAuthenticated, isAdminOrSubadmin } = require('./middleware/authMiddleware');
-
-
 const adminRoute = require('./routes/adminRoute');
 const signupRoute = require('./routes/signupRoute');
 const loginRoute = require('./routes/loginRoute');
