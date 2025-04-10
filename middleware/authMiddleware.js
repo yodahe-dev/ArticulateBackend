@@ -1,36 +1,36 @@
 const { User } = require('../models');
 
-// Check if the user is authenticated
+// Fast auth check middleware
 const isAuthenticated = (req, res, next) => {
-  if (req.session.userId) {
-    return next();
-  }
-  res.redirect('/login');
+  req.session.userId ? next() : res.redirect('/login');
 };
 
-// Check if the user is not authenticated
 const isNotAuthenticated = (req, res, next) => {
-  if (!req.session.userId) {
-    return next();
-  }
-  res.redirect('/');
+  !req.session.userId ? next() : res.redirect('/');
 };
 
-// Check if the user has admin or subadmin role
+// Super fast role check with minimal DB fetch
 const isAdminOrSubadmin = async (req, res, next) => {
+  const userId = req.session.userId;
+  if (!userId) return res.redirect('/login');
+
   try {
-    const user = await User.findByPk(req.session.userId, { include: 'Role' });
+    const user = await User.findOne({
+      where: { id: userId },
+      attributes: ['id'],
+      include: {
+        association: 'Role',
+        attributes: ['role_name'],
+      },
+    });
 
-    // Ensure user exists and their role is either 'admin' or 'subadmin'
-    if (user && (user.Role.role_name === 'admin' || user.Role.role_name === 'subadmin')) {
-      return next(); // Allow access if the user has the required role
-    }
+    const role = user?.Role?.role_name;
+    if (role === 'admin' || role === 'subadmin') return next();
 
-    // If the user does not have the correct role
-    return res.status(403).json({ message: 'Forbidden: You are not authorized to perform this action' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(403).json({ message: 'Forbidden' });
+  } catch (err) {
+    console.error('Role Check Error:', err);
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
